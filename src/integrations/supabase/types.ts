@@ -14,7 +14,494 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      conversations: {
+        Row: {
+          created_at: string
+          factory_id: string | null
+          id: string
+          last_message_at: string | null
+          type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          factory_id?: string | null
+          id?: string
+          last_message_at?: string | null
+          type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          factory_id?: string | null
+          id?: string
+          last_message_at?: string | null
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversations_factory_id_fkey"
+            columns: ["factory_id"]
+            isOneToOne: false
+            referencedRelation: "factories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      factories: {
+        Row: {
+          category: string
+          certifications: string[] | null
+          city: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          country: string | null
+          cover_image_url: string | null
+          created_at: string
+          description: string | null
+          description_en: string | null
+          description_zh: string | null
+          employees_count: string | null
+          established_year: number | null
+          export_countries: string[] | null
+          id: string
+          is_direct_factory: boolean | null
+          location: string | null
+          logo_url: string | null
+          main_products: string[] | null
+          min_order_value: number | null
+          name: string
+          name_en: string | null
+          name_zh: string | null
+          production_capacity: string | null
+          rating: number | null
+          response_rate: number | null
+          response_time: string | null
+          reviews_count: number | null
+          subcategory: string | null
+          updated_at: string
+          verification_score: number | null
+          verification_status: string | null
+          website_url: string | null
+        }
+        Insert: {
+          category: string
+          certifications?: string[] | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          description_en?: string | null
+          description_zh?: string | null
+          employees_count?: string | null
+          established_year?: number | null
+          export_countries?: string[] | null
+          id?: string
+          is_direct_factory?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          main_products?: string[] | null
+          min_order_value?: number | null
+          name: string
+          name_en?: string | null
+          name_zh?: string | null
+          production_capacity?: string | null
+          rating?: number | null
+          response_rate?: number | null
+          response_time?: string | null
+          reviews_count?: number | null
+          subcategory?: string | null
+          updated_at?: string
+          verification_score?: number | null
+          verification_status?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          category?: string
+          certifications?: string[] | null
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          description_en?: string | null
+          description_zh?: string | null
+          employees_count?: string | null
+          established_year?: number | null
+          export_countries?: string[] | null
+          id?: string
+          is_direct_factory?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          main_products?: string[] | null
+          min_order_value?: number | null
+          name?: string
+          name_en?: string | null
+          name_zh?: string | null
+          production_capacity?: string | null
+          rating?: number | null
+          response_rate?: number | null
+          response_time?: string | null
+          reviews_count?: number | null
+          subcategory?: string | null
+          updated_at?: string
+          verification_score?: number | null
+          verification_status?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      import_orders: {
+        Row: {
+          created_at: string
+          currency: string | null
+          estimated_price: number | null
+          factory_id: string | null
+          final_price: number | null
+          id: string
+          inspection_required: boolean | null
+          notes: string | null
+          product_description: string | null
+          product_id: string | null
+          product_name: string
+          quantity: number
+          shipping_cost: number | null
+          shipping_method: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string | null
+          estimated_price?: number | null
+          factory_id?: string | null
+          final_price?: number | null
+          id?: string
+          inspection_required?: boolean | null
+          notes?: string | null
+          product_description?: string | null
+          product_id?: string | null
+          product_name: string
+          quantity?: number
+          shipping_cost?: number | null
+          shipping_method?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string | null
+          estimated_price?: number | null
+          factory_id?: string | null
+          final_price?: number | null
+          id?: string
+          inspection_required?: boolean | null
+          notes?: string | null
+          product_description?: string | null
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          shipping_cost?: number | null
+          shipping_method?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "import_orders_factory_id_fkey"
+            columns: ["factory_id"]
+            isOneToOne: false
+            referencedRelation: "factories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "import_orders_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messages: {
+        Row: {
+          attachments: string[] | null
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          read_at: string | null
+          sender_id: string
+          sender_type: string
+        }
+        Insert: {
+          attachments?: string[] | null
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id: string
+          sender_type: string
+        }
+        Update: {
+          attachments?: string[] | null
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id?: string
+          sender_type?: string
+        }
+        Relationships: []
+      }
+      order_documents: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          order_id: string
+          type: string
+          uploaded_by: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          order_id: string
+          type: string
+          uploaded_by?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          order_id?: string
+          type?: string
+          uploaded_by?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_documents_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "import_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_timeline: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          order_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          order_id: string
+          status: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          order_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_timeline_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "import_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      products: {
+        Row: {
+          category: string
+          created_at: string
+          currency: string | null
+          customizable: boolean | null
+          description: string | null
+          factory_id: string
+          id: string
+          images: string[] | null
+          lead_time: string | null
+          max_price: number | null
+          min_order_quantity: number | null
+          min_price: number | null
+          name: string
+          name_en: string | null
+          name_zh: string | null
+          price: number | null
+          sample_available: boolean | null
+          sample_price: number | null
+          specifications: Json | null
+          subcategory: string | null
+          unit: string | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          currency?: string | null
+          customizable?: boolean | null
+          description?: string | null
+          factory_id: string
+          id?: string
+          images?: string[] | null
+          lead_time?: string | null
+          max_price?: number | null
+          min_order_quantity?: number | null
+          min_price?: number | null
+          name: string
+          name_en?: string | null
+          name_zh?: string | null
+          price?: number | null
+          sample_available?: boolean | null
+          sample_price?: number | null
+          specifications?: Json | null
+          subcategory?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          currency?: string | null
+          customizable?: boolean | null
+          description?: string | null
+          factory_id?: string
+          id?: string
+          images?: string[] | null
+          lead_time?: string | null
+          max_price?: number | null
+          min_order_quantity?: number | null
+          min_price?: number | null
+          name?: string
+          name_en?: string | null
+          name_zh?: string | null
+          price?: number | null
+          sample_available?: boolean | null
+          sample_price?: number | null
+          specifications?: Json | null
+          subcategory?: string | null
+          unit?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_factory_id_fkey"
+            columns: ["factory_id"]
+            isOneToOne: false
+            referencedRelation: "factories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          city: string | null
+          company_name: string | null
+          country: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          phone: string | null
+          preferred_language: string | null
+          subscription_end_date: string | null
+          subscription_plan: string | null
+          subscription_status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          city?: string | null
+          company_name?: string | null
+          country?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          preferred_language?: string | null
+          subscription_end_date?: string | null
+          subscription_plan?: string | null
+          subscription_status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          city?: string | null
+          company_name?: string | null
+          country?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          preferred_language?: string | null
+          subscription_end_date?: string | null
+          subscription_plan?: string | null
+          subscription_status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      service_requests: {
+        Row: {
+          created_at: string
+          details: Json | null
+          id: string
+          status: string | null
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          id?: string
+          status?: string | null
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          id?: string
+          status?: string | null
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
