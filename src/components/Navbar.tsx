@@ -20,6 +20,7 @@ const Navbar = () => {
         <div className="hidden md:flex items-center gap-8 text-white/90">
           <a href="#how-it-works" className="hover:text-white transition-colors">كيف يعمل</a>
           <a href="#pricing" className="hover:text-white transition-colors">الأسعار</a>
+          <a href="#shipping" className="hover:text-white transition-colors">الشحن</a>
           <a href="#blog" className="hover:text-white transition-colors">المدونة</a>
           <a href="#support" className="hover:text-white transition-colors">الدعم</a>
           <a href="#ai" className="hover:text-white transition-colors">محقق IFROF الذكي للمصانع</a>
