@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Globe, Menu, X, Search, User, Bell, MessageSquare } from 'lucide-react';
+import { Menu, X, Search, User, Bell, MessageSquare } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,19 +9,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
+  const { t, language } = useLanguage();
   const isHomePage = location.pathname === '/';
   const isLoggedIn = false; // Will be replaced with actual auth state
 
   const navLinks = [
-    { href: '/marketplace', label: 'سوق المصانع' },
-    { href: '/ai-search', label: 'البحث الذكي' },
-    { href: '/services', label: 'الخدمات' },
-    { href: '/pricing', label: 'الأسعار' },
-    { href: '/blog', label: 'المدونة' },
+    { href: '/marketplace', label: t('nav.marketplace') },
+    { href: '/ai-search', label: t('nav.aiSearch') },
+    { href: '/services', label: t('nav.services') },
+    { href: '/pricing', label: t('nav.pricing') },
+    { href: '/blog', label: t('nav.blog') },
   ];
 
   return (
@@ -33,9 +36,11 @@ const Navbar = () => {
             <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg md:text-xl">
               IF
             </div>
-            <div className="text-right hidden sm:block">
+            <div className={`hidden sm:block ${language === 'ar' ? 'text-right' : 'text-left'}`}>
               <h1 className="text-lg md:text-xl font-bold text-white">IFROF</h1>
-              <p className="text-xs text-white/70">استورد مباشرة من المصنع</p>
+              <p className="text-xs text-white/70">
+                {language === 'ar' ? 'استورد مباشرة من المصنع' : language === 'zh' ? '直接从工厂进口' : 'Import directly from factory'}
+              </p>
             </div>
           </Link>
 
@@ -63,10 +68,7 @@ const Navbar = () => {
             </button>
 
             {/* Language Switcher */}
-            <button className="flex items-center gap-1 px-2 py-2 rounded-lg bg-white/10 text-white text-sm hover:bg-white/20 transition-colors">
-              <Globe className="w-4 h-4" />
-              <span className="hidden md:inline">EN</span>
-            </button>
+            <LanguageSwitcher variant="light" />
 
             {isLoggedIn ? (
               <>
@@ -91,20 +93,20 @@ const Navbar = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem asChild>
-                      <Link to="/dashboard">لوحة التحكم</Link>
+                      <Link to="/dashboard">{t('nav.dashboard')}</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/dashboard/orders">طلباتي</Link>
+                      <Link to="/dashboard/orders">{language === 'ar' ? 'طلباتي' : language === 'zh' ? '我的订单' : 'My Orders'}</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to="/dashboard/documents">المستندات</Link>
+                      <Link to="/dashboard/documents">{language === 'ar' ? 'المستندات' : language === 'zh' ? '文档' : 'Documents'}</Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link to="/dashboard/settings">الإعدادات</Link>
+                      <Link to="/dashboard/settings">{language === 'ar' ? 'الإعدادات' : language === 'zh' ? '设置' : 'Settings'}</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="text-destructive">
-                      تسجيل الخروج
+                      {language === 'ar' ? 'تسجيل الخروج' : language === 'zh' ? '退出登录' : 'Logout'}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -113,13 +115,13 @@ const Navbar = () => {
               <>
                 <Link to="/auth">
                   <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 hidden md:inline-flex">
-                    تسجيل الدخول
+                    {t('nav.login')}
                   </Button>
                 </Link>
                 <Link to="/auth?mode=signup">
                   <Button variant="hero" size="sm" className="hidden sm:inline-flex">
-                    ابدأ الآن
-                    <span className="mr-1">←</span>
+                    {t('nav.startImport')}
+                    <span className={language === 'ar' ? 'mr-1' : 'ml-1'}>{language === 'ar' ? '←' : '→'}</span>
                   </Button>
                 </Link>
               </>
@@ -159,11 +161,11 @@ const Navbar = () => {
                     className="px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors text-center"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    تسجيل الدخول
+                    {t('nav.login')}
                   </Link>
                   <Link to="/auth?mode=signup" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="hero" className="w-full">
-                      ابدأ الآن
+                      {t('nav.startImport')}
                     </Button>
                   </Link>
                 </>
