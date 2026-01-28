@@ -1,9 +1,8 @@
-import React, { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin, Youtube } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-const Footer = forwardRef<HTMLElement>((_, ref) => {
+const Footer = () => {
   const { language } = useLanguage();
 
   const content = {
@@ -78,7 +77,7 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
   const c = content[language];
 
   return (
-    <footer ref={ref} className="bg-accent text-white">
+    <footer className="bg-accent text-white">
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 md:gap-12">
@@ -183,8 +182,6 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
       </div>
     </footer>
   );
-});
-
-Footer.displayName = 'Footer';
+};
 
 export default Footer;

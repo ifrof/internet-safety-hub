@@ -1,10 +1,9 @@
-import React, { forwardRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Sparkles, Headphones } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 
-const CTASection = forwardRef<HTMLElement>((_, ref) => {
+const CTASection = () => {
   const { language } = useLanguage();
   const Arrow = language === 'ar' ? ArrowLeft : ArrowRight;
 
@@ -38,7 +37,7 @@ const CTASection = forwardRef<HTMLElement>((_, ref) => {
   const c = content[language];
 
   return (
-    <section ref={ref} className="py-16 md:py-20 bg-background">
+    <section className="py-16 md:py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="bg-gradient-to-br from-secondary to-accent rounded-3xl p-6 md:p-12 lg:p-16 text-center relative overflow-hidden">
           {/* Decorative elements */}
@@ -81,8 +80,6 @@ const CTASection = forwardRef<HTMLElement>((_, ref) => {
       </div>
     </section>
   );
-});
-
-CTASection.displayName = 'CTASection';
+};
 
 export default CTASection;
