@@ -21,7 +21,6 @@ const Navbar = () => {
 
   const navLinks = [
     { href: '/marketplace', label: t('nav.marketplace') },
-    { href: '/ai-search', label: t('nav.aiSearch') },
     { href: '/services', label: t('nav.services') },
     { href: '/pricing', label: t('nav.pricing') },
     { href: '/blog', label: t('nav.blog') },

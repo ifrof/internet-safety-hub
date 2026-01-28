@@ -197,20 +197,20 @@ const Dashboard = () => {
 
           {/* Quick Actions */}
           <div className="grid md:grid-cols-3 gap-4 mt-8">
-            <Link to="/ai-search" className="bg-card rounded-2xl p-6 border border-border hover:border-primary transition-colors group">
+            <Link to="/marketplace" className="bg-card rounded-2xl p-6 border border-border hover:border-primary transition-colors group">
               <Search className="w-8 h-8 text-primary mb-4" />
-              <h3 className="font-bold mb-2">البحث الذكي</h3>
-              <p className="text-sm text-muted-foreground">ابحث عن مصانع بالذكاء الاصطناعي</p>
+              <h3 className="font-bold mb-2">البحث المتقدم</h3>
+              <p className="text-sm text-muted-foreground">ابحث عن مصانع موثقة</p>
             </Link>
             <Link to="/services" className="bg-card rounded-2xl p-6 border border-border hover:border-primary transition-colors group">
               <FileText className="w-8 h-8 text-primary mb-4" />
               <h3 className="font-bold mb-2">طلب خدمة</h3>
               <p className="text-sm text-muted-foreground">تفتيش، شحن، تحويل أموال</p>
             </Link>
-            <Link to="/ai-chat" className="bg-card rounded-2xl p-6 border border-border hover:border-primary transition-colors group">
+            <Link to="/services" className="bg-card rounded-2xl p-6 border border-border hover:border-primary transition-colors group">
               <MessageSquare className="w-8 h-8 text-primary mb-4" />
-              <h3 className="font-bold mb-2">المساعد الذكي</h3>
-              <p className="text-sm text-muted-foreground">تحدث معنا للمساعدة</p>
+              <h3 className="font-bold mb-2">الدعم الفني</h3>
+              <p className="text-sm text-muted-foreground">تواصل معنا للمساعدة</p>
             </Link>
           </div>
         </main>
