@@ -211,7 +211,7 @@ const FactoryPage = () => {
                       <Shield className="w-8 h-8 text-green-500" />
                       <div>
                         <h3 className="font-bold text-green-700">مصنع موثق</h3>
-                        <p className="text-sm text-green-600">تم التحقق بالذكاء الاصطناعي</p>
+                        <p className="text-sm text-green-600">تم التحقق والاعتماد</p>
                       </div>
                     </div>
                     <p className="text-sm text-muted-foreground">
