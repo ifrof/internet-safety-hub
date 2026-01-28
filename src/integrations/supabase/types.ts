@@ -167,6 +167,113 @@ export type Database = {
         }
         Relationships: []
       }
+      factory_results: {
+        Row: {
+          created_at: string
+          evidence: Json | null
+          exclusion_reason: string | null
+          id: string
+          is_excluded: boolean | null
+          links: string[] | null
+          location: string | null
+          name: string
+          name_zh: string | null
+          red_flags: string[] | null
+          score: number
+          search_id: string
+          verification_steps: string[] | null
+          website: string | null
+          why_factory: string[] | null
+        }
+        Insert: {
+          created_at?: string
+          evidence?: Json | null
+          exclusion_reason?: string | null
+          id?: string
+          is_excluded?: boolean | null
+          links?: string[] | null
+          location?: string | null
+          name: string
+          name_zh?: string | null
+          red_flags?: string[] | null
+          score?: number
+          search_id: string
+          verification_steps?: string[] | null
+          website?: string | null
+          why_factory?: string[] | null
+        }
+        Update: {
+          created_at?: string
+          evidence?: Json | null
+          exclusion_reason?: string | null
+          id?: string
+          is_excluded?: boolean | null
+          links?: string[] | null
+          location?: string | null
+          name?: string
+          name_zh?: string | null
+          red_flags?: string[] | null
+          score?: number
+          search_id?: string
+          verification_steps?: string[] | null
+          website?: string | null
+          why_factory?: string[] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "factory_results_search_id_fkey"
+            columns: ["search_id"]
+            isOneToOne: false
+            referencedRelation: "factory_searches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      factory_searches: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          expires_at: string | null
+          id: string
+          input_image_url: string | null
+          input_value: string
+          normalized_product: Json | null
+          optional_params: Json | null
+          search_type: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          expires_at?: string | null
+          id?: string
+          input_image_url?: string | null
+          input_value: string
+          normalized_product?: Json | null
+          optional_params?: Json | null
+          search_type: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          expires_at?: string | null
+          id?: string
+          input_image_url?: string | null
+          input_value?: string
+          normalized_product?: Json | null
+          optional_params?: Json | null
+          search_type?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       import_orders: {
         Row: {
           created_at: string
