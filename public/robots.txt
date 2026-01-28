@@ -12,3 +12,12 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: https://ifrof.com/sitemap.xml
+
+# Disallow sensitive areas
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /messages
+Disallow: /auth

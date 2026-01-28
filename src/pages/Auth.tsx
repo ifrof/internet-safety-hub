@@ -250,9 +250,9 @@ const Auth = () => {
 
             {mode === 'login' && (
               <div className="text-left">
-                <a href="#" className="text-xs md:text-sm text-primary hover:underline">
+                <Link to="/forgot-password" className="text-xs md:text-sm text-primary hover:underline">
                   نسيت كلمة المرور؟
-                </a>
+                </Link>
               </div>
             )}
 

@@ -13,6 +13,8 @@ import Pricing from "./pages/Pricing";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Auth from "./pages/Auth";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Orders from "./pages/dashboard/Orders";
 import Documents from "./pages/dashboard/Documents";
@@ -44,6 +46,8 @@ const App = () => (
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/dashboard/orders" element={<Orders />} />
             <Route path="/dashboard/documents" element={<Documents />} />

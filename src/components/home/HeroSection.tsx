@@ -8,12 +8,14 @@ import { useLanguage } from '@/contexts/LanguageContext';
 const HeroSection = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
-  const { t, language } = useLanguage();
+  const { language } = useLanguage();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/ai-search?q=${encodeURIComponent(searchQuery)}`);
+      navigate(`/marketplace?q=${encodeURIComponent(searchQuery)}`);
+    } else {
+      navigate('/marketplace');
     }
   };
 
@@ -23,9 +25,9 @@ const HeroSection = () => {
       title: 'استورد مباشرة من المصنع الصيني',
       titleHighlight: 'بدون وسطاء',
       subtitle: 'نربطك مباشرة بالمصانع الصينية الموثقة. نتحقق من كل مصنع بتقنيات متقدمة لضمان أنه مصنع مباشر وليس وسيط.',
-      searchPlaceholder: 'ابحث عن منتج، صورة، أو رابط...',
+      searchPlaceholder: 'ابحث عن منتج أو مصنع...',
       searchButton: 'ابحث عن مصانع',
-      searchHint: 'يمكنك البحث بالنص، رابط منتج، أو رفع صورة للمنتج',
+      searchHint: 'ابحث بالنص أو رابط منتج للعثور على مصانع موثقة',
       howItWorks: 'شاهد كيف يعمل',
       browseFactories: 'تصفح المصانع',
       stats: {
@@ -42,9 +44,9 @@ const HeroSection = () => {
       title: 'Import Directly from Chinese Factory',
       titleHighlight: 'No Middlemen',
       subtitle: 'We connect you directly with verified Chinese factories. We verify each factory with advanced technology to ensure it\'s a direct manufacturer, not a middleman.',
-      searchPlaceholder: 'Search for product, image, or link...',
+      searchPlaceholder: 'Search for product or factory...',
       searchButton: 'Find Factories',
-      searchHint: 'You can search by text, product link, or upload an image',
+      searchHint: 'Search by text or product link to find verified factories',
       howItWorks: 'See How It Works',
       browseFactories: 'Browse Factories',
       stats: {
@@ -61,9 +63,9 @@ const HeroSection = () => {
       title: '直接从中国工厂进口',
       titleHighlight: '无中间商',
       subtitle: '我们直接将您与经过验证的中国工厂连接。我们使用先进技术验证每家工厂，确保它是直接制造商，而不是中间商。',
-      searchPlaceholder: '搜索产品、图片或链接...',
+      searchPlaceholder: '搜索产品或工厂...',
       searchButton: '查找工厂',
-      searchHint: '您可以通过文字、产品链接或上传图片进行搜索',
+      searchHint: '通过文字或产品链接搜索认证工厂',
       howItWorks: '了解工作原理',
       browseFactories: '浏览工厂',
       stats: {
@@ -158,7 +160,7 @@ const HeroSection = () => {
           <div className="flex flex-wrap justify-center gap-8 text-white/80">
             <TrustBadge icon="🎯" text={c.badges[0]} />
             <TrustBadge icon="✅" text={c.badges[1]} />
-            <TrustBadge icon="🤖" text={c.badges[2]} />
+            <TrustBadge icon="🔍" text={c.badges[2]} />
             <TrustBadge icon="🔒" text={c.badges[3]} />
             <TrustBadge icon="💬" text={c.badges[4]} />
           </div>
