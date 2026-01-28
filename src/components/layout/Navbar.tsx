@@ -11,13 +11,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useAuth } from '@/hooks/useAuth';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { t, language } = useLanguage();
+  const { user, signOut } = useAuth();
   const isHomePage = location.pathname === '/';
-  const isLoggedIn = false; // Will be replaced with actual auth state
 
   const navLinks = [
     { href: '/marketplace', label: t('nav.marketplace') },
@@ -25,6 +26,11 @@ const Navbar = () => {
     { href: '/pricing', label: t('nav.pricing') },
     { href: '/blog', label: t('nav.blog') },
   ];
+
+  const handleSignOut = async () => {
+    await signOut();
+    setIsMenuOpen(false);
+  };
 
   return (
     <nav className={`${isHomePage ? 'absolute' : 'sticky'} top-0 left-0 right-0 z-50 ${!isHomePage && 'bg-secondary shadow-lg'}`}>
@@ -61,27 +67,26 @@ const Navbar = () => {
           {/* Right Side Actions */}
           <div className="flex items-center gap-2 md:gap-3">
             {/* Search Button - Desktop */}
-            <button className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 text-white text-sm hover:bg-white/20 transition-colors">
+            <Link to="/marketplace" className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 text-white text-sm hover:bg-white/20 transition-colors">
               <Search className="w-4 h-4" />
-              <span className="hidden xl:inline">بحث</span>
-            </button>
+              <span className="hidden xl:inline">{language === 'ar' ? 'بحث' : language === 'zh' ? '搜索' : 'Search'}</span>
+            </Link>
 
             {/* Language Switcher */}
             <LanguageSwitcher variant="light" />
 
-            {isLoggedIn ? (
+            {user ? (
               <>
                 {/* Notifications */}
-                <button className="relative p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors">
+                <Link to="/dashboard" className="relative p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors">
                   <Bell className="w-5 h-5" />
                   <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
-                </button>
+                </Link>
 
                 {/* Messages */}
-                <button className="relative p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors">
+                <Link to="/messages" className="relative p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors hidden sm:flex">
                   <MessageSquare className="w-5 h-5" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-primary rounded-full"></span>
-                </button>
+                </Link>
 
                 {/* User Menu */}
                 <DropdownMenu>
@@ -104,7 +109,10 @@ const Navbar = () => {
                     <DropdownMenuItem asChild>
                       <Link to="/dashboard/settings">{language === 'ar' ? 'الإعدادات' : language === 'zh' ? '设置' : 'Settings'}</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="text-destructive">
+                    <DropdownMenuItem 
+                      className="text-destructive cursor-pointer"
+                      onClick={handleSignOut}
+                    >
                       {language === 'ar' ? 'تسجيل الخروج' : language === 'zh' ? '退出登录' : 'Logout'}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -130,6 +138,7 @@ const Navbar = () => {
             <button
               className="lg:hidden p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
             >
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -137,41 +146,66 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="lg:hidden bg-secondary/95 backdrop-blur-lg rounded-xl mb-4 p-4 border border-white/10">
-            <div className="flex flex-col gap-2">
-              {navLinks.map((link) => (
+        <div 
+          className={`lg:hidden bg-secondary/95 backdrop-blur-lg rounded-xl mb-4 border border-white/10 overflow-hidden transition-all duration-300 ${
+            isMenuOpen ? 'max-h-[500px] p-4 opacity-100' : 'max-h-0 p-0 opacity-0 pointer-events-none'
+          }`}
+        >
+          <div className="flex flex-col gap-2">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                className={`px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors ${
+                  location.pathname === link.href ? 'bg-primary text-primary-foreground' : ''
+                }`}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+            <div className="border-t border-white/10 my-2"></div>
+            {user ? (
+              <>
                 <Link
-                  key={link.href}
-                  to={link.href}
-                  className={`px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors ${
-                    location.pathname === link.href ? 'bg-primary text-primary-foreground' : ''
-                  }`}
+                  to="/dashboard"
+                  className="px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {link.label}
+                  {t('nav.dashboard')}
                 </Link>
-              ))}
-              <div className="border-t border-white/10 my-2"></div>
-              {!isLoggedIn && (
-                <>
-                  <Link
-                    to="/auth"
-                    className="px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors text-center"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    {t('nav.login')}
-                  </Link>
-                  <Link to="/auth?mode=signup" onClick={() => setIsMenuOpen(false)}>
-                    <Button variant="hero" className="w-full">
-                      {t('nav.startImport')}
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
+                <Link
+                  to="/messages"
+                  className="px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {language === 'ar' ? 'الرسائل' : language === 'zh' ? '消息' : 'Messages'}
+                </Link>
+                <button
+                  className="px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-colors text-center"
+                  onClick={handleSignOut}
+                >
+                  {language === 'ar' ? 'تسجيل الخروج' : language === 'zh' ? '退出登录' : 'Logout'}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/auth"
+                  className="px-4 py-3 rounded-lg text-white hover:bg-white/10 transition-colors text-center"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {t('nav.login')}
+                </Link>
+                <Link to="/auth?mode=signup" onClick={() => setIsMenuOpen(false)}>
+                  <Button variant="hero" className="w-full">
+                    {t('nav.startImport')}
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </nav>
   );
