@@ -50,6 +50,13 @@ export type Database = {
             referencedRelation: "factories"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "conversations_factory_id_fkey"
+            columns: ["factory_id"]
+            isOneToOne: false
+            referencedRelation: "factories_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       factories: {
@@ -224,6 +231,13 @@ export type Database = {
             columns: ["factory_id"]
             isOneToOne: false
             referencedRelation: "factories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "import_orders_factory_id_fkey"
+            columns: ["factory_id"]
+            isOneToOne: false
+            referencedRelation: "factories_public"
             referencedColumns: ["id"]
           },
           {
@@ -419,6 +433,13 @@ export type Database = {
             referencedRelation: "factories"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "products_factory_id_fkey"
+            columns: ["factory_id"]
+            isOneToOne: false
+            referencedRelation: "factories_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       profiles: {
@@ -502,15 +523,143 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      factories_public: {
+        Row: {
+          category: string | null
+          certifications: string[] | null
+          city: string | null
+          country: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          description: string | null
+          description_en: string | null
+          description_zh: string | null
+          employees_count: string | null
+          established_year: number | null
+          export_countries: string[] | null
+          id: string | null
+          is_direct_factory: boolean | null
+          location: string | null
+          logo_url: string | null
+          main_products: string[] | null
+          min_order_value: number | null
+          name: string | null
+          name_en: string | null
+          name_zh: string | null
+          production_capacity: string | null
+          rating: number | null
+          response_rate: number | null
+          response_time: string | null
+          reviews_count: number | null
+          subcategory: string | null
+          updated_at: string | null
+          verification_score: number | null
+          verification_status: string | null
+          website_url: string | null
+        }
+        Insert: {
+          category?: string | null
+          certifications?: string[] | null
+          city?: string | null
+          country?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          description_en?: string | null
+          description_zh?: string | null
+          employees_count?: string | null
+          established_year?: number | null
+          export_countries?: string[] | null
+          id?: string | null
+          is_direct_factory?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          main_products?: string[] | null
+          min_order_value?: number | null
+          name?: string | null
+          name_en?: string | null
+          name_zh?: string | null
+          production_capacity?: string | null
+          rating?: number | null
+          response_rate?: number | null
+          response_time?: string | null
+          reviews_count?: number | null
+          subcategory?: string | null
+          updated_at?: string | null
+          verification_score?: number | null
+          verification_status?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          category?: string | null
+          certifications?: string[] | null
+          city?: string | null
+          country?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          description_en?: string | null
+          description_zh?: string | null
+          employees_count?: string | null
+          established_year?: number | null
+          export_countries?: string[] | null
+          id?: string | null
+          is_direct_factory?: boolean | null
+          location?: string | null
+          logo_url?: string | null
+          main_products?: string[] | null
+          min_order_value?: number | null
+          name?: string | null
+          name_en?: string | null
+          name_zh?: string | null
+          production_capacity?: string | null
+          rating?: number | null
+          response_rate?: number | null
+          response_time?: string | null
+          reviews_count?: number | null
+          subcategory?: string | null
+          updated_at?: string | null
+          verification_score?: number | null
+          verification_status?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -637,6 +786,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const

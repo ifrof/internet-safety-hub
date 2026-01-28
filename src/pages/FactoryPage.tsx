@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
@@ -6,17 +6,26 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useFactory } from '@/hooks/useFactories';
+import { useAuth } from '@/hooks/useAuth';
+import { useMessages } from '@/hooks/useMessages';
+import { useToast } from '@/hooks/use-toast';
 import { mockProducts } from '@/data/mockData';
 import { 
   Star, CheckCircle, MapPin, Calendar, Users, Factory, 
   Award, Clock, DollarSign, MessageSquare, Phone, Share2,
   Package, Shield, TrendingUp, Loader2
 } from 'lucide-react';
+import { useState } from 'react';
 
 const FactoryPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { createConversation } = useMessages();
+  const { toast } = useToast();
   const { data: factory, isLoading, error } = useFactory(id || '');
   const factoryProducts = mockProducts.filter(p => p.factoryId === id);
+  const [contactLoading, setContactLoading] = useState(false);
 
   if (isLoading) {
     return (
@@ -57,6 +66,29 @@ const FactoryPage = () => {
       </div>
     );
   }
+
+
+  const handleContactFactory = async () => {
+    if (!user) {
+      toast({
+        title: 'تسجيل الدخول مطلوب',
+        description: 'يجب تسجيل الدخول للتواصل مع المصنع',
+        variant: 'destructive',
+      });
+      navigate('/auth');
+      return;
+    }
+
+    if (!id) return;
+
+    setContactLoading(true);
+    const conversation = await createConversation(id);
+    setContactLoading(false);
+
+    if (conversation) {
+      navigate(`/messages/${conversation.id}`);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -129,8 +161,18 @@ const FactoryPage = () => {
 
             {/* Actions */}
             <div className="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto">
-              <Button variant="hero" size="default" className="flex-1 md:flex-none text-sm md:text-base">
-                <MessageSquare className="w-4 h-4 md:w-5 md:h-5 ml-1 md:ml-2" />
+              <Button 
+                variant="hero" 
+                size="default" 
+                className="flex-1 md:flex-none text-sm md:text-base"
+                onClick={handleContactFactory}
+                disabled={contactLoading}
+              >
+                {contactLoading ? (
+                  <Loader2 className="w-4 h-4 md:w-5 md:h-5 ml-1 md:ml-2 animate-spin" />
+                ) : (
+                  <MessageSquare className="w-4 h-4 md:w-5 md:h-5 ml-1 md:ml-2" />
+                )}
                 تواصل الآن
               </Button>
               <Button variant="outline" size="default" className="flex-1 md:flex-none border-white/30 text-white hover:bg-white/10 text-sm md:text-base">
