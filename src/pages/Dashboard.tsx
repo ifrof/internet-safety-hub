@@ -5,15 +5,17 @@ import { Badge } from '@/components/ui/badge';
 import {
   LayoutDashboard, Package, FileText, MessageSquare, Settings,
   CreditCard, Bell, Search, User, ChevronLeft, Menu, X, 
-  Factory, TrendingUp, Clock, LogOut, Loader2
+  Factory, TrendingUp, Clock, LogOut, Loader2, Shield
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { user, loading, signOut } = useAuth();
+  const { isAdmin } = useUserRole();
 
   // Redirect if not logged in
   useEffect(() => {
@@ -26,9 +28,10 @@ const Dashboard = () => {
     { href: '/dashboard', icon: LayoutDashboard, label: 'لوحة التحكم' },
     { href: '/dashboard/orders', icon: Package, label: 'طلباتي' },
     { href: '/dashboard/documents', icon: FileText, label: 'المستندات' },
-    { href: '/dashboard/messages', icon: MessageSquare, label: 'الرسائل', badge: 3 },
+    { href: '/messages', icon: MessageSquare, label: 'الرسائل', badge: 3 },
     { href: '/dashboard/subscription', icon: CreditCard, label: 'الاشتراك' },
     { href: '/dashboard/settings', icon: Settings, label: 'الإعدادات' },
+    ...(isAdmin ? [{ href: '/admin', icon: Shield, label: 'الإدارة' }] : []),
   ];
 
   const stats = [
