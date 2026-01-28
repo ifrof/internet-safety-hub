@@ -1,10 +1,9 @@
-import { forwardRef } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Sparkles } from "lucide-react";
 
-const CTA = forwardRef<HTMLElement>((_, ref) => {
+const CTA = () => {
   return (
-    <section ref={ref} className="py-20 bg-background">
+    <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="bg-gradient-to-br from-secondary to-accent rounded-3xl p-8 md:p-16 text-center relative overflow-hidden">
           {/* Decorative elements */}
@@ -40,8 +39,6 @@ const CTA = forwardRef<HTMLElement>((_, ref) => {
       </div>
     </section>
   );
-});
-
-CTA.displayName = "CTA";
+};
 
 export default CTA;
