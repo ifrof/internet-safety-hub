@@ -365,12 +365,68 @@ export const serviceCategories = [
 ];
 
 export const categories = [
-  { id: 'electronics', name: 'الإلكترونيات', icon: '📱', count: 156 },
-  { id: 'clothing', name: 'الملابس', icon: '👕', count: 243 },
-  { id: 'home', name: 'المنزل والمطبخ', icon: '🏠', count: 189 },
-  { id: 'toys', name: 'الألعاب', icon: '🧸', count: 98 },
-  { id: 'beauty', name: 'التجميل والعناية', icon: '💄', count: 134 },
-  { id: 'sports', name: 'الرياضة', icon: '⚽', count: 76 },
-  { id: 'auto', name: 'السيارات', icon: '🚗', count: 65 },
-  { id: 'industrial', name: 'صناعي', icon: '🏭', count: 112 },
+  { 
+    id: 'electronics', 
+    name: 'مصانع الإلكترونيات وإكسسوارات الموبايل', 
+    nameEn: 'Electronics & Mobile Accessories Factories',
+    icon: '📱', 
+    count: 156,
+    description: 'سماعات، شواحن، كابلات، باور بانك، أغطية موبايل'
+  },
+  { 
+    id: 'clothing', 
+    name: 'مصانع الملابس والمنسوجات', 
+    nameEn: 'Clothing & Textiles Factories',
+    icon: '👕', 
+    count: 243,
+    description: 'ملابس رجالية ونسائية، ملابس أطفال، ملابس رياضية'
+  },
+  { 
+    id: 'home', 
+    name: 'مصانع منتجات المنزل والمطبخ', 
+    nameEn: 'Home & Kitchen Products Factories',
+    icon: '🏠', 
+    count: 189,
+    description: 'أدوات مطبخ، أواني، ديكور، مستلزمات منزلية'
+  },
+  { 
+    id: 'beauty', 
+    name: 'مصانع العناية الشخصية والتجميل', 
+    nameEn: 'Personal Care & Beauty Factories',
+    icon: '💄', 
+    count: 134,
+    description: 'مستحضرات تجميل، عناية بالبشرة، عطور، فرش مكياج'
+  },
+  { 
+    id: 'toys', 
+    name: 'مصانع ألعاب الأطفال والمنتجات التعليمية', 
+    nameEn: 'Toys & Educational Products Factories',
+    icon: '🧸', 
+    count: 98,
+    description: 'ألعاب بلاستيكية، ألعاب تعليمية، دمى، ألعاب خارجية'
+  },
+  { 
+    id: 'auto', 
+    name: 'مصانع إكسسوارات السيارات', 
+    nameEn: 'Car Accessories Factories',
+    icon: '🚗', 
+    count: 65,
+    description: 'إكسسوارات داخلية وخارجية، قطع غيار، أدوات'
+  },
+  { 
+    id: 'sports', 
+    name: 'مصانع المنتجات الرياضية', 
+    nameEn: 'Sports Products Factories',
+    icon: '⚽', 
+    count: 76,
+    description: 'معدات رياضية، ملابس رياضية، أدوات لياقة'
+  },
+  { 
+    id: 'industrial', 
+    name: 'مصانع المنتجات الصناعية الخفيفة', 
+    nameEn: 'Light Industrial Products Factories',
+    icon: '🏭', 
+    count: 112,
+    description: 'أدوات يدوية، معدات خفيفة، مستلزمات صناعية'
+  },
 ];
