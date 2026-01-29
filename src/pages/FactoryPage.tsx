@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
@@ -9,14 +9,19 @@ import { useFactory } from '@/hooks/useFactories';
 import { mockProducts } from '@/data/mockData';
 import { 
   Star, CheckCircle, MapPin, Calendar, Users, Factory, 
-  Award, Clock, DollarSign, Share2,
+  Award, Clock, DollarSign, Share2, FileText,
   Package, Shield, TrendingUp
 } from 'lucide-react';
 
 const FactoryPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { data: factory, isLoading, error } = useFactory(id || '');
   const factoryProducts = mockProducts.filter(p => p.factoryId === id);
+
+  const handleRequestQuote = () => {
+    navigate(`/services/quote?factory=${id}&name=${encodeURIComponent(factory?.name || '')}`);
+  };
 
   if (isLoading) {
     return (
@@ -130,6 +135,15 @@ const FactoryPage = () => {
 
             {/* Actions */}
             <div className="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto">
+              <Button 
+                variant="hero" 
+                size="default" 
+                className="flex-1 md:flex-none text-sm md:text-base"
+                onClick={handleRequestQuote}
+              >
+                <FileText className="w-4 h-4 md:w-5 md:h-5 ml-1 md:ml-2" />
+                طلب عرض سعر
+              </Button>
               <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
                 <Share2 className="w-4 h-4 md:w-5 md:h-5" />
               </Button>

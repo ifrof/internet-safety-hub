@@ -102,11 +102,11 @@ const HeroSection = () => {
 
         {/* Main heading */}
         <div className="text-center max-w-4xl mx-auto mb-8">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-6 animate-fade-in-up" style={{ animationDelay: '100ms' }}>
             {c.title}
             <span className="block text-gradient-orange mt-2">{c.titleHighlight}</span>
           </h1>
-          <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+          <p className="text-base md:text-lg text-white/70 max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: '200ms' }}>
             {c.subtitle}
           </p>
         </div>
@@ -186,9 +186,9 @@ const StatItem = ({ icon, value, label, delay }: { icon: string; value: string; 
     className="text-center animate-fade-in-up"
     style={{ animationDelay: `${delay + 500}ms` }}
   >
-    <div className="text-2xl mb-2">{icon}</div>
-    <div className="text-3xl md:text-4xl font-bold text-primary mb-1">{value}</div>
-    <div className="text-white/70 text-sm">{label}</div>
+    <div className="text-xl mb-2">{icon}</div>
+    <div className="text-2xl md:text-3xl font-bold text-primary mb-1">{value}</div>
+    <div className="text-white/70 text-xs md:text-sm">{label}</div>
   </div>
 );
 

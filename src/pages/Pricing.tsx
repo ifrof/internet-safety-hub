@@ -88,10 +88,10 @@ const Pricing = () => {
       {/* Hero */}
       <section className="bg-secondary pt-24 pb-16">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4">
             {c.title}
           </h1>
-          <p className="text-white/70 text-lg max-w-2xl mx-auto">
+          <p className="text-white/70 text-sm md:text-base max-w-2xl mx-auto">
             {c.subtitle}
           </p>
         </div>

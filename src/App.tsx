@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import AIChatWidget from "@/components/chat/AIChatWidget";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 // Loading fallback component
 const PageLoader = () => (
@@ -68,37 +69,41 @@ const App = () => (
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
             <Routes>
+              {/* Public pages - no subscription required */}
               <Route path="/" element={<Index />} />
-              <Route path="/marketplace" element={<Marketplace />} />
-              <Route path="/factory/:id" element={<FactoryPage />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/services" element={<Services />} />
-              <Route path="/services/:serviceId" element={<ServiceDetail />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogPost />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dashboard/orders" element={<Orders />} />
-              <Route path="/dashboard/documents" element={<Documents />} />
-              <Route path="/dashboard/subscription" element={<Subscription />} />
-              <Route path="/dashboard/settings" element={<Settings />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/messages" element={<Messages />} />
-              <Route path="/messages/:conversationId" element={<Messages />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/refund" element={<Refund />} />
               <Route path="/about" element={<About />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/direct-factory" element={<DirectFactory />} />
-              <Route path="/factory-search" element={<FactorySearch />} />
-              <Route path="/factory-results/:id" element={<FactoryResults />} />
-              <Route path="/services/quote" element={<QuotePage />} />
-              <Route path="/services/verification" element={<QuotePage />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+              {/* Protected pages - subscription required */}
+              <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
+              <Route path="/factory/:id" element={<ProtectedRoute><FactoryPage /></ProtectedRoute>} />
+              <Route path="/product/:id" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
+              <Route path="/services" element={<ProtectedRoute><Services /></ProtectedRoute>} />
+              <Route path="/services/:serviceId" element={<ProtectedRoute><ServiceDetail /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/dashboard/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+              <Route path="/dashboard/documents" element={<ProtectedRoute><Documents /></ProtectedRoute>} />
+              <Route path="/dashboard/subscription" element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
+              <Route path="/dashboard/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+              <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+              <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+              <Route path="/messages/:conversationId" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
+              <Route path="/direct-factory" element={<ProtectedRoute><DirectFactory /></ProtectedRoute>} />
+              <Route path="/factory-search" element={<ProtectedRoute><FactorySearch /></ProtectedRoute>} />
+              <Route path="/factory-results/:id" element={<ProtectedRoute><FactoryResults /></ProtectedRoute>} />
+              <Route path="/services/quote" element={<ProtectedRoute><QuotePage /></ProtectedRoute>} />
+              <Route path="/services/verification" element={<ProtectedRoute><QuotePage /></ProtectedRoute>} />
+
+              {/* Catch-all */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
