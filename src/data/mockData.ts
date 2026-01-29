@@ -355,6 +355,13 @@ export const serviceCategories = [
     description: 'نجد لك المنتج والمصنع المناسب',
     startingPrice: 50,
   },
+  {
+    id: 'verification',
+    name: 'التحقق من المورد',
+    icon: '✅',
+    description: 'تحقق شامل من المصنع وملكيته ووضعه القانوني',
+    startingPrice: 99,
+  },
 ];
 
 export const categories = [
