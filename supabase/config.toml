@@ -4,4 +4,4 @@ project_id = "pinbppuktcqdbplmmusz"
 verify_jwt = false
 
 [functions.factory-search]
-verify_jwt = false
+verify_jwt = true
