@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   LayoutDashboard, Package, FileText, MessageSquare, Settings,
   CreditCard, Bell, Search, User, ChevronLeft, Menu, X, 
@@ -9,6 +10,14 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
+import { supabase } from '@/integrations/supabase/client';
+
+interface DashboardStats {
+  ordersCount: number;
+  messagesCount: number;
+  servicesCount: number;
+  factoriesContactedCount: number;
+}
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -16,6 +25,14 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user, loading, signOut } = useAuth();
   const { isAdmin } = useUserRole();
+  const [stats, setStats] = useState<DashboardStats>({
+    ordersCount: 0,
+    messagesCount: 0,
+    servicesCount: 0,
+    factoriesContactedCount: 0
+  });
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [statsLoading, setStatsLoading] = useState(true);
 
   // Redirect if not logged in
   useEffect(() => {
@@ -24,33 +41,74 @@ const Dashboard = () => {
     }
   }, [user, loading, navigate]);
 
+  // Fetch real data
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      if (!user) return;
+      
+      try {
+        // Fetch orders count
+        const { count: ordersCount } = await supabase
+          .from('import_orders')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id);
+
+        // Fetch conversations count
+        const { count: messagesCount } = await supabase
+          .from('conversations')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id);
+
+        // Fetch service requests count
+        const { count: servicesCount } = await supabase
+          .from('service_requests')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id);
+
+        // Fetch recent orders
+        const { data: orders } = await supabase
+          .from('import_orders')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(5);
+
+        setStats({
+          ordersCount: ordersCount || 0,
+          messagesCount: messagesCount || 0,
+          servicesCount: servicesCount || 0,
+          factoriesContactedCount: messagesCount || 0
+        });
+
+        setRecentOrders(orders || []);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setStatsLoading(false);
+      }
+    };
+
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user]);
+
   const menuItems = [
     { href: '/dashboard', icon: LayoutDashboard, label: 'لوحة التحكم' },
     { href: '/dashboard/orders', icon: Package, label: 'طلباتي' },
     { href: '/dashboard/documents', icon: FileText, label: 'المستندات' },
-    { href: '/messages', icon: MessageSquare, label: 'الرسائل', badge: 3 },
+    { href: '/messages', icon: MessageSquare, label: 'الرسائل', badge: stats.messagesCount > 0 ? stats.messagesCount : undefined },
     { href: '/dashboard/subscription', icon: CreditCard, label: 'الاشتراك' },
     { href: '/dashboard/settings', icon: Settings, label: 'الإعدادات' },
     ...(isAdmin ? [{ href: '/admin', icon: Shield, label: 'الإدارة' }] : []),
   ];
 
-  const stats = [
-    { label: 'الطلبات النشطة', value: '3', icon: Package, color: 'text-blue-500' },
-    { label: 'المصانع المتصلة', value: '12', icon: Factory, color: 'text-green-500' },
-    { label: 'في انتظار الرد', value: '5', icon: Clock, color: 'text-yellow-500' },
-    { label: 'نسبة التوفير', value: '28%', icon: TrendingUp, color: 'text-primary' },
+  const statsCards = [
+    { label: 'الطلبات', value: statsLoading ? '-' : stats.ordersCount.toString(), icon: Package, color: 'text-blue-500' },
+    { label: 'المصانع المتصلة', value: statsLoading ? '-' : stats.factoriesContactedCount.toString(), icon: Factory, color: 'text-green-500' },
+    { label: 'طلبات الخدمات', value: statsLoading ? '-' : stats.servicesCount.toString(), icon: Clock, color: 'text-yellow-500' },
+    { label: 'المحادثات', value: statsLoading ? '-' : stats.messagesCount.toString(), icon: MessageSquare, color: 'text-primary' },
   ];
-
-  const recentOrders = [
-    { id: 'ORD-001', product: 'سماعات بلوتوث TWS', factory: 'مصنع قوانغتشو للإلكترونيات', status: 'قيد التصنيع', date: '2024-01-15' },
-    { id: 'ORD-002', product: 'تي شيرت قطن', factory: 'مصنع شينزن للملابس', status: 'في انتظار الدفع', date: '2024-01-12' },
-    { id: 'ORD-003', product: 'أواني طهي', factory: 'مصنع ييوو للمستلزمات', status: 'تم الشحن', date: '2024-01-10' },
-  ];
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate('/');
-  };
 
   if (loading) {
     return (
@@ -75,11 +133,6 @@ const Dashboard = () => {
           onClick={() => setSidebarOpen(false)}
         />
       )}
-
-      {/* Sidebar */}
-      <aside className={`fixed top-0 right-0 h-full w-64 bg-card border-l border-border z-50 transform transition-transform duration-300 lg:translate-x-0 ${
-        sidebarOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
-      }`}>
         {/* Logo */}
         <div className="p-4 md:p-6 border-b border-border">
           <Link to="/" className="flex items-center gap-3">
