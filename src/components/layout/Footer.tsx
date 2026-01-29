@@ -30,6 +30,8 @@ const Footer = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>((props
       privacy: 'سياسة الخصوصية',
       terms: 'شروط الاستخدام',
       refund: 'سياسة الاسترداد',
+      platformDescription: 'منصة IFROF تربط المشترين مباشرة بالمصانع الصينية الموثقة. نقضي على الوسطاء ونضمن لك أفضل الأسعار.',
+      madeWith: 'صنع بـ ❤️ للتجارة العالمية',
     },
     en: {
       tagline: 'Import Directly from Factory',
@@ -54,6 +56,8 @@ const Footer = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>((props
       privacy: 'Privacy Policy',
       terms: 'Terms of Service',
       refund: 'Refund Policy',
+      platformDescription: 'IFROF connects buyers directly with verified Chinese factories. We eliminate middlemen and guarantee you the best prices.',
+      madeWith: 'Made with ❤️ for Global Trade',
     },
     zh: {
       tagline: '直接从工厂进口',
@@ -78,6 +82,8 @@ const Footer = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>((props
       privacy: '隐私政策',
       terms: '服务条款',
       refund: '退款政策',
+      platformDescription: 'IFROF 将买家直接与经过验证的中国工厂联系起来。我们消除中间商，保证您获得最优惠的价格。',
+      madeWith: '用 ❤️ 为全球贸易打造',
     },
   };
 
@@ -163,7 +169,17 @@ const Footer = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>((props
       {/* Bottom Bar */}
       <div className="border-t border-white/10">
         <div className="container mx-auto px-4 py-4 md:py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          {/* Platform Description - Left aligned */}
+          <div className="mb-4 text-start">
+            <p className="text-white/70 text-xs md:text-sm leading-relaxed max-w-2xl">
+              {c.platformDescription}
+            </p>
+            <p className="text-white/50 text-xs mt-2">
+              {c.madeWith}
+            </p>
+          </div>
+          
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-4 border-t border-white/5">
             <p className="text-white/60 text-xs md:text-sm text-center md:text-start">
               {c.copyright}
             </p>
