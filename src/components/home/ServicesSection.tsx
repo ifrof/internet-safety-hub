@@ -8,10 +8,10 @@ const ServicesSection = () => {
     <section className="py-16 md:py-20 hero-gradient">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
             خدمات إضافية لنجاح استيرادك
           </h2>
-          <p className="text-white/70 text-lg max-w-2xl mx-auto">
+          <p className="text-white/70 text-sm md:text-base max-w-2xl mx-auto">
             نقدم لك مجموعة شاملة من الخدمات لتسهيل عملية الاستيراد من البداية حتى النهاية
           </p>
         </div>
@@ -24,11 +24,11 @@ const ServicesSection = () => {
               className="group glass-card rounded-2xl p-6 hover:bg-white/15 transition-all duration-300 animate-fade-in-up"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="text-4xl mb-4">{service.icon}</div>
-              <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary transition-colors">
+              <div className="text-3xl mb-4">{service.icon}</div>
+              <h3 className="text-lg font-bold text-white mb-2 group-hover:text-primary transition-colors">
                 {service.name}
               </h3>
-              <p className="text-white/70 mb-4">{service.description}</p>
+              <p className="text-white/70 text-sm mb-4">{service.description}</p>
               <div className="flex items-center justify-between">
                 <span className="text-primary font-semibold">
                   {typeof service.startingPrice === 'number' 

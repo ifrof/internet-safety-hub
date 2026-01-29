@@ -8,10 +8,10 @@ const PricingSection = () => {
     <section id="pricing" className="py-16 md:py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
             أسعار بسيطة وشفافة
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
             اشترك بـ $9.99 شهرياً واحصل على وصول كامل للمنصة وجميع الخدمات
           </p>
         </div>
@@ -35,14 +35,14 @@ const PricingSection = () => {
               )}
 
               <div className="text-center mb-8">
-                <h3 className={`text-2xl font-bold mb-2 ${plan.priority ? 'text-white' : 'text-foreground'}`}>
+                <h3 className={`text-xl font-bold mb-2 ${plan.priority ? 'text-white' : 'text-foreground'}`}>
                   {plan.nameAr}
                 </h3>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className={`text-5xl font-bold ${plan.priority ? 'text-white' : 'text-foreground'}`}>
+                  <span className={`text-3xl md:text-4xl font-bold ${plan.priority ? 'text-white' : 'text-foreground'}`}>
                     ${plan.price}
                   </span>
-                  <span className={plan.priority ? 'text-white/70' : 'text-muted-foreground'}>/شهر</span>
+                  <span className={`text-sm ${plan.priority ? 'text-white/70' : 'text-muted-foreground'}`}>/شهر</span>
                 </div>
               </div>
 

@@ -42,10 +42,10 @@ const CategoriesSection = () => {
     <section className="py-20 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
             {c.title}
           </h2>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-sm md:text-base">
             {c.subtitle}
           </p>
         </div>
@@ -58,12 +58,12 @@ const CategoriesSection = () => {
               className="group relative bg-card rounded-2xl p-6 border border-border hover:border-primary hover:shadow-xl transition-all duration-300 animate-fade-in-up"
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <div className="text-4xl mb-4">{category.icon}</div>
-              <h3 className="font-bold text-foreground text-lg mb-1 group-hover:text-primary transition-colors">
+              <div className="text-3xl mb-4">{category.icon}</div>
+              <h3 className="font-bold text-foreground text-base mb-1 group-hover:text-primary transition-colors">
                 {categoryNames[category.id]?.[language] || category.name}
               </h3>
-              <p className="text-muted-foreground text-sm">{category.count} {c.factory}</p>
-              <Arrow className={`absolute ${language === 'ar' ? 'left-4' : 'right-4'} bottom-6 w-5 h-5 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all transform ${language === 'ar' ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`} />
+              <p className="text-muted-foreground text-xs">{category.count} {c.factory}</p>
+              <Arrow className={`absolute ${language === 'ar' ? 'left-4' : 'right-4'} bottom-6 w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all transform ${language === 'ar' ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`} />
             </Link>
           ))}
         </div>

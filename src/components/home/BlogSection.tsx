@@ -10,10 +10,10 @@ const BlogSection = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
               المدونة التعليمية
             </h2>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-sm md:text-base">
               تعلم كل ما تحتاجه عن الاستيراد من الصين
             </p>
           </div>
