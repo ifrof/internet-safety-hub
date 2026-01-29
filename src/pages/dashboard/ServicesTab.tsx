@@ -62,7 +62,10 @@ const ServicesTab = () => {
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setRequests(data || []);
+        setRequests((data || []).map(item => ({
+          ...item,
+          details: (typeof item.details === 'object' && item.details !== null ? item.details : {}) as Record<string, any>
+        })));
       } catch (error) {
         console.error('Error fetching service requests:', error);
       } finally {
