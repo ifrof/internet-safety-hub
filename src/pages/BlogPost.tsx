@@ -3,26 +3,71 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { mockBlogPosts } from '@/data/mockData';
-import { Clock, User, ArrowRight, Calendar, Share2, Facebook, Twitter, Linkedin, Copy, CheckCircle } from 'lucide-react';
+import { getBlogPost, getAllBlogPosts } from '@/data/blogContent';
+import { Clock, User, ArrowRight, ArrowLeft, Calendar, Share2, Facebook, Twitter, Linkedin, Copy, CheckCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const BlogPost = () => {
   const { slug } = useParams();
   const { toast } = useToast();
+  const { language, t, dir } = useLanguage();
   const [copied, setCopied] = useState(false);
 
-  const post = mockBlogPosts.find(p => p.slug === slug);
+  const post = slug ? getBlogPost(slug, language) : null;
+  const allPosts = getAllBlogPosts(language);
+
+  const BackArrow = dir === 'rtl' ? ArrowRight : ArrowLeft;
+
+  const getLabels = () => {
+    switch (language) {
+      case 'en':
+        return {
+          notFound: 'Article not found',
+          backToBlog: 'Back to Blog',
+          readTime: 'min read',
+          conclusion: 'Conclusion',
+          shareArticle: 'Share Article',
+          copyLink: 'Copy Link',
+          copied: 'Copied!',
+          relatedPosts: 'Related Articles'
+        };
+      case 'zh':
+        return {
+          notFound: '文章未找到',
+          backToBlog: '返回博客',
+          readTime: '分钟阅读',
+          conclusion: '结论',
+          shareArticle: '分享文章',
+          copyLink: '复制链接',
+          copied: '已复制!',
+          relatedPosts: '相关文章'
+        };
+      default:
+        return {
+          notFound: 'المقال غير موجود',
+          backToBlog: 'العودة للمدونة',
+          readTime: 'دقائق قراءة',
+          conclusion: 'الخلاصة',
+          shareArticle: 'شارك المقال',
+          copyLink: 'نسخ الرابط',
+          copied: 'تم النسخ!',
+          relatedPosts: 'مقالات ذات صلة'
+        };
+    }
+  };
+
+  const labels = getLabels();
 
   if (!post) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="container mx-auto px-4 py-32 text-center">
-          <h1 className="text-2xl font-bold mb-4">المقال غير موجود</h1>
+          <h1 className="text-2xl font-bold mb-4">{labels.notFound}</h1>
           <Link to="/blog">
-            <Button>العودة للمدونة</Button>
+            <Button>{labels.backToBlog}</Button>
           </Link>
         </div>
         <Footer />
@@ -30,177 +75,14 @@ const BlogPost = () => {
     );
   }
 
-  // Full article content based on the post
-  const articleContent = {
-    'beginners-guide-to-importing-from-china': {
-      intro: `يعتبر الاستيراد من الصين من أكثر المشاريع التجارية ربحية في العالم العربي، لكنه يتطلب فهماً عميقاً للسوق والإجراءات. في هذا الدليل الشامل، سنأخذك خطوة بخطوة في رحلتك الأولى للاستيراد.`,
-      sections: [
-        {
-          title: 'لماذا الاستيراد من الصين؟',
-          content: `تُعد الصين "مصنع العالم" لأسباب وجيهة. تتميز بـ:
-          
-• **أسعار تنافسية**: تكلفة العمالة والإنتاج أقل بكثير من معظم الدول
-• **تنوع هائل**: يمكنك إيجاد أي منتج تقريباً
-• **طاقة إنتاجية ضخمة**: القدرة على تلبية طلبات كبيرة
-• **خبرة تصنيعية**: عقود من الخبرة في التصنيع للعالم
-
-التوفير يمكن أن يصل إلى 40-70% مقارنة بالشراء من الموزعين المحليين.`
-        },
-        {
-          title: 'الخطوة الأولى: البحث والتخطيط',
-          content: `قبل البدء، يجب عليك:
-
-1. **تحديد المنتج**: اختر منتجاً تفهم سوقه المحلي
-2. **دراسة السوق**: تعرف على المنافسين والأسعار
-3. **حساب التكاليف**: تذكر أن السعر النهائي = سعر المنتج + الشحن + الجمارك + الضرائب
-4. **تحديد الميزانية**: ابدأ بميزانية صغيرة للتجربة الأولى ($3,000-$5,000)
-5. **معرفة اللوائح**: تأكد من أن المنتج مسموح به في بلدك`
-        },
-        {
-          title: 'الخطوة الثانية: إيجاد المصنع المناسب',
-          content: `هذه أهم خطوة في العملية. عليك التمييز بين:
-
-**المصنع المباشر (Factory)**:
-• أسعار أفضل
-• إمكانية التخصيص
-• يتطلب كميات أكبر عادة
-
-**شركة التجارة (Trading Company)**:
-• كميات أقل
-• أسعار أعلى
-• قد يفتقر للتخصيص
-
-نصيحتنا: استخدم منصة مثل IFROF للتحقق من المصانع وضمان التعامل مع مصانع مباشرة موثقة.`
-        },
-        {
-          title: 'الخطوة الثالثة: التواصل والتفاوض',
-          content: `عند التواصل مع المصنع:
-
-• **اطلب عينات**: لا تشتري كميات كبيرة قبل فحص العينات ($20-$100)
-• **تفاوض على السعر**: السعر الأول ليس نهائياً عادة
-• **اطلب شهادات الجودة**: ISO, CE, RoHS حسب المنتج
-• **حدد شروط الدفع**: ابدأ بـ 30% مقدم و 70% قبل الشحن
-• **اتفق على الضمان**: ماذا لو كان المنتج معيباً؟
-
-استخدم WeChat أو Alibaba للتواصل، لكن احتفظ بكل شيء مكتوباً.`
-        },
-        {
-          title: 'الخطوة الرابعة: الفحص والشحن',
-          content: `قبل الشحن:
-
-• **فحص الجودة**: استخدم شركة فحص محايدة (مثل خدماتنا)
-• **اختر طريقة الشحن**:
-  - الجوي: سريع (5-7 أيام) لكن مكلف
-  - البحري: اقتصادي لكن بطيء (25-40 يوم)
-  - السريع (DHL/FedEx): للعينات فقط
-
-**التخليص الجمركي**:
-• جهز الفاتورة التجارية
-• جهز بوليصة الشحن
-• جهز شهادة المنشأ
-• احسب الرسوم الجمركية مسبقاً`
-        }
-      ],
-      conclusion: `الاستيراد من الصين رحلة تستحق العناء إذا تمت بشكل صحيح. ابدأ صغيراً، تعلم من الأخطاء، واستخدم منصات موثوقة مثل IFROF للتحقق من المصانع. بالتوفيق في رحلتك!`
-    },
-    'how-to-choose-right-factory': {
-      intro: `اختيار المصنع الصحيح هو العامل الأكثر تأثيراً على نجاح عملية الاستيراد. في هذا المقال، سنشارك معك 10 معايير أساسية لاختيار المصنع المناسب.`,
-      sections: [
-        {
-          title: '1. التحقق من أنه مصنع حقيقي',
-          content: `أول وأهم خطوة هي التأكد أنك تتعامل مع مصنع وليس وسيط:
-
-• اطلب صور وفيديوهات للمصنع
-• تحقق من رخصة التصنيع
-• استخدم خدمات التحقق من IFROF
-• ابحث عن المصنع في السجلات الرسمية`
-        },
-        {
-          title: '2. تقييم الطاقة الإنتاجية',
-          content: `تأكد أن المصنع قادر على تلبية طلباتك:
-
-• ما هي الطاقة الإنتاجية الشهرية؟
-• هل يمكنهم زيادة الإنتاج إذا احتجت؟
-• ما هي أوقات التسليم المعتادة؟`
-        },
-        {
-          title: '3. فحص شهادات الجودة',
-          content: `الشهادات مهمة للتأكد من جودة المنتج والامتثال للمعايير:
-
-• ISO 9001: نظام إدارة الجودة
-• CE: للمنتجات الموجهة لأوروبا
-• FDA: للمنتجات الغذائية والطبية
-• RoHS: للإلكترونيات`
-        },
-        {
-          title: '4. مراجعة سجل التصدير',
-          content: `المصانع ذات الخبرة في التصدير أفضل:
-
-• إلى أي دول يصدرون؟
-• كم سنة من الخبرة لديهم؟
-• هل لديهم عملاء راضين؟`
-        }
-      ],
-      conclusion: `اختيار المصنع الصحيح يوفر عليك الكثير من المشاكل. خذ وقتك في البحث والتحقق، ولا تتردد في استخدام خدمات التحقق المتخصصة.`
-    },
-    'factory-vs-trading-company': {
-      intro: `من أكثر الأسئلة شيوعاً بين المستوردين الجدد: هل أتعامل مع المصنع مباشرة أم مع شركة تجارة؟ في هذا المقال، سنوضح الفروقات ونساعدك على اتخاذ القرار الصحيح.`,
-      sections: [
-        {
-          title: 'ما هو المصنع المباشر؟',
-          content: `المصنع المباشر هو المنشأة التي تصنع المنتج فعلياً. تتميز بـ:
-
-• أسعار أقل (لا عمولة وسطاء)
-• إمكانية التخصيص والتعديل
-• تحكم أكبر في الجودة
-• علاقة مباشرة مع المنتج
-
-لكن قد تتطلب كميات أكبر وقد تكون أقل خبرة في التعامل مع العملاء الأجانب.`
-        },
-        {
-          title: 'ما هي شركة التجارة؟',
-          content: `شركة التجارة (Trading Company) هي وسيط بينك وبين المصنع:
-
-• تتعامل مع عدة مصانع
-• تقدم خدمات إضافية (فحص، شحن)
-• أكثر مرونة في الكميات
-• خبرة أكبر في التصدير
-
-لكن أسعارها أعلى بسبب هامش الربح.`
-        },
-        {
-          title: 'كيف تفرق بينهما؟',
-          content: `إليك بعض العلامات:
-
-**علامات المصنع**:
-• لديهم موقع إنتاج يمكن زيارته
-• يتحدثون بتفصيل عن عملية التصنيع
-• لديهم شهادات مصنع
-• رخصة التصنيع واضحة
-
-**علامات شركة التجارة**:
-• مكتب فقط بدون مصنع
-• يمكنهم توفير أي منتج
-• أسعار متقاربة لمنتجات مختلفة
-• لا يعرفون تفاصيل التصنيع`
-        }
-      ],
-      conclusion: `الخيار الأفضل يعتمد على احتياجاتك. للطلبات الكبيرة والمنتجات المخصصة، المصنع أفضل. للكميات الصغيرة والمنتجات المتنوعة، شركة التجارة قد تكون أنسب.`
-    }
-  };
-
-  const content = articleContent[slug as keyof typeof articleContent] || {
-    intro: post.excerpt,
-    sections: [],
-    conclusion: 'شكراً لقراءتك!'
-  };
-
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
     setCopied(true);
     toast({
-      title: 'تم النسخ',
-      description: 'تم نسخ الرابط إلى الحافظة',
+      title: labels.copied,
+      description: language === 'ar' ? 'تم نسخ الرابط إلى الحافظة' : 
+                   language === 'zh' ? '链接已复制到剪贴板' : 
+                   'Link copied to clipboard',
     });
     setTimeout(() => setCopied(false), 2000);
   };
@@ -217,8 +99,8 @@ const BlogPost = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <Link to="/blog" className="inline-flex items-center gap-2 text-white/70 hover:text-white mb-6 transition-colors">
-              <ArrowRight className="w-4 h-4" />
-              العودة للمدونة
+              <BackArrow className="w-4 h-4" />
+              {labels.backToBlog}
             </Link>
             
             <Badge className="bg-primary mb-4">{post.category}</Badge>
@@ -238,7 +120,7 @@ const BlogPost = () => {
               </span>
               <span className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                {post.readTime} دقائق قراءة
+                {post.readTime} {labels.readTime}
               </span>
             </div>
           </div>
@@ -266,10 +148,10 @@ const BlogPost = () => {
               {/* Main Content */}
               <article className="lg:col-span-3 prose prose-lg max-w-none">
                 <p className="text-lg text-muted-foreground leading-relaxed mb-8">
-                  {content.intro}
+                  {post.intro}
                 </p>
 
-                {content.sections.map((section, index) => (
+                {post.sections.map((section, index) => (
                   <div key={index} className="mb-8">
                     <h2 className="text-xl md:text-2xl font-bold mb-4">{section.title}</h2>
                     <div className="text-muted-foreground whitespace-pre-line leading-relaxed">
@@ -279,8 +161,8 @@ const BlogPost = () => {
                 ))}
 
                 <div className="bg-primary/10 rounded-2xl p-6 mt-8">
-                  <h3 className="font-bold mb-2">الخلاصة</h3>
-                  <p className="text-muted-foreground">{content.conclusion}</p>
+                  <h3 className="font-bold mb-2">{labels.conclusion}</h3>
+                  <p className="text-muted-foreground">{post.conclusion}</p>
                 </div>
 
                 {/* Tags */}
@@ -299,7 +181,7 @@ const BlogPost = () => {
                 <div className="bg-card rounded-2xl p-6 border border-border sticky top-24">
                   <h3 className="font-bold mb-4 flex items-center gap-2">
                     <Share2 className="w-5 h-5" />
-                    شارك المقال
+                    {labels.shareArticle}
                   </h3>
                   <div className="flex flex-col gap-3">
                     <a
@@ -309,7 +191,7 @@ const BlogPost = () => {
                       className="flex items-center gap-3 p-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 transition-colors"
                     >
                       <Facebook className="w-5 h-5 text-blue-500" />
-                      <span className="text-sm">فيسبوك</span>
+                      <span className="text-sm">Facebook</span>
                     </a>
                     <a
                       href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`}
@@ -318,7 +200,7 @@ const BlogPost = () => {
                       className="flex items-center gap-3 p-3 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 transition-colors"
                     >
                       <Twitter className="w-5 h-5 text-sky-500" />
-                      <span className="text-sm">تويتر</span>
+                      <span className="text-sm">Twitter</span>
                     </a>
                     <a
                       href={`https://www.linkedin.com/shareArticle?mini=true&url=${shareUrl}&title=${shareTitle}`}
@@ -327,7 +209,7 @@ const BlogPost = () => {
                       className="flex items-center gap-3 p-3 rounded-lg bg-blue-700/10 hover:bg-blue-700/20 transition-colors"
                     >
                       <Linkedin className="w-5 h-5 text-blue-700" />
-                      <span className="text-sm">لينكد إن</span>
+                      <span className="text-sm">LinkedIn</span>
                     </a>
                     <button
                       onClick={handleCopyLink}
@@ -338,7 +220,7 @@ const BlogPost = () => {
                       ) : (
                         <Copy className="w-5 h-5" />
                       )}
-                      <span className="text-sm">{copied ? 'تم النسخ!' : 'نسخ الرابط'}</span>
+                      <span className="text-sm">{copied ? labels.copied : labels.copyLink}</span>
                     </button>
                   </div>
                 </div>
@@ -351,9 +233,9 @@ const BlogPost = () => {
       {/* Related Posts */}
       <section className="py-12 bg-muted/50">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold mb-8 text-center">مقالات ذات صلة</h2>
+          <h2 className="text-2xl font-bold mb-8 text-center">{labels.relatedPosts}</h2>
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {mockBlogPosts.filter(p => p.slug !== slug).slice(0, 3).map((relatedPost) => (
+            {allPosts.filter(p => p.slug !== slug).slice(0, 3).map((relatedPost) => (
               <Link
                 key={relatedPost.id}
                 to={`/blog/${relatedPost.slug}`}
