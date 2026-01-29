@@ -171,10 +171,10 @@ const Footer = forwardRef<HTMLElement, React.HTMLAttributes<HTMLElement>>((props
         <div className="container mx-auto px-4 py-4 md:py-6">
           {/* Platform Description - Left aligned */}
           <div className="mb-4 text-start">
-            <p className="text-white/70 text-xs md:text-sm leading-relaxed max-w-2xl">
+            <p className="text-white text-sm md:text-base leading-relaxed max-w-2xl font-medium">
               {c.platformDescription}
             </p>
-            <p className="text-white/50 text-xs mt-2">
+            <p className="text-white/80 text-sm mt-2">
               {c.madeWith}
             </p>
           </div>

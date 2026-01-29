@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import AIChatWidget from "@/components/chat/AIChatWidget";
 
 // Loading fallback component
 const PageLoader = () => (
@@ -101,6 +102,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
+          <AIChatWidget />
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
