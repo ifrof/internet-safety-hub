@@ -133,6 +133,11 @@ const Dashboard = () => {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+
+      {/* Sidebar */}
+      <aside className={`fixed top-0 right-0 h-full w-64 bg-card border-l border-border z-50 transform transition-transform duration-300 lg:translate-x-0 ${
+        sidebarOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'
+      }`}>
         {/* Logo */}
         <div className="p-4 md:p-6 border-b border-border">
           <Link to="/" className="flex items-center gap-3">
@@ -188,7 +193,10 @@ const Dashboard = () => {
             variant="outline" 
             size="sm" 
             className="w-full text-xs md:text-sm"
-            onClick={handleSignOut}
+            onClick={async () => {
+              await signOut();
+              navigate('/');
+            }}
           >
             <LogOut className="w-3.5 h-3.5 md:w-4 md:h-4 ml-2" />
             تسجيل الخروج
@@ -243,7 +251,7 @@ const Dashboard = () => {
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
-            {stats.map((stat, index) => (
+            {statsCards.map((stat, index) => (
               <div key={index} className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 border border-border">
                 <div className="flex items-center justify-between mb-3 md:mb-4">
                   <stat.icon className={`w-6 h-6 md:w-8 md:h-8 ${stat.color}`} />
