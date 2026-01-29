@@ -334,16 +334,27 @@ const translations: Record<Language, Record<string, string>> = { ar, en, zh };
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('ifrof-language');
-    return (saved as Language) || 'ar';
+    // Validate that saved value is a valid language
+    if (saved === 'ar' || saved === 'en' || saved === 'zh') {
+      return saved;
+    }
+    return 'ar'; // Default to Arabic
   });
 
   const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-    localStorage.setItem('ifrof-language', lang);
+    if (lang === 'ar' || lang === 'en' || lang === 'zh') {
+      setLanguageState(lang);
+      localStorage.setItem('ifrof-language', lang);
+    }
   };
 
   const t = (key: string): string => {
-    return translations[language][key] || key;
+    const translation = translations[language];
+    if (!translation) {
+      console.warn(`No translations found for language: ${language}`);
+      return translations['ar'][key] || key;
+    }
+    return translation[key] || key;
   };
 
   const dir: 'rtl' | 'ltr' = language === 'ar' ? 'rtl' : 'ltr';
