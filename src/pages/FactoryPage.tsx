@@ -7,17 +7,111 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useFactory } from '@/hooks/useFactories';
 import { mockProducts } from '@/data/mockData';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   Star, CheckCircle, MapPin, Calendar, Users, Factory, 
   Award, Clock, DollarSign, Share2, FileText,
-  Package, Shield, TrendingUp
+  Package, Shield, TrendingUp, Settings2
 } from 'lucide-react';
 
 const FactoryPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { language } = useLanguage();
   const { data: factory, isLoading, error } = useFactory(id || '');
   const factoryProducts = mockProducts.filter(p => p.factoryId === id);
+
+  const content = {
+    ar: {
+      notFound: 'المصنع غير موجود',
+      backToMarket: 'العودة للسوق',
+      requestQuote: 'طلب عرض سعر',
+      verified: 'موثق بنسبة',
+      since: 'منذ',
+      employees: 'موظف',
+      overview: 'نظرة عامة',
+      products: 'المنتجات',
+      certifications: 'الشهادات',
+      reviews: 'التقييمات',
+      aboutFactory: 'عن المصنع',
+      defaultDescription: 'مصنع متخصص في إنتاج منتجات عالية الجودة بأسعار تنافسية.',
+      mainProducts: 'المنتجات الرئيسية',
+      quickInfo: 'معلومات سريعة',
+      productionCapacity: 'الطاقة الإنتاجية',
+      moq: 'الحد الأدنى للطلب',
+      responseSpeed: 'سرعة الرد',
+      responseRate: 'نسبة الرد',
+      verifiedFactory: 'مصنع موثق',
+      verifiedDesc: 'تم التحقق والاعتماد',
+      verifiedInfo: 'هذا المصنع تم التحقق منه كمصنع مباشر وليس وسيط.',
+      manufacturingType: 'نوع التصنيع',
+      noProducts: 'لا توجد منتجات حالياً',
+      certifiedBadge: 'شهادة معتمدة',
+      reviewsComingSoon: 'التقييمات ستظهر قريباً',
+      minOrder: 'الحد الأدنى',
+      unit: 'قطعة',
+    },
+    en: {
+      notFound: 'Factory not found',
+      backToMarket: 'Back to Market',
+      requestQuote: 'Request Quote',
+      verified: 'Verified',
+      since: 'Since',
+      employees: 'employees',
+      overview: 'Overview',
+      products: 'Products',
+      certifications: 'Certifications',
+      reviews: 'Reviews',
+      aboutFactory: 'About Factory',
+      defaultDescription: 'Factory specialized in producing high-quality products at competitive prices.',
+      mainProducts: 'Main Products',
+      quickInfo: 'Quick Info',
+      productionCapacity: 'Production Capacity',
+      moq: 'Minimum Order Quantity',
+      responseSpeed: 'Response Speed',
+      responseRate: 'Response Rate',
+      verifiedFactory: 'Verified Factory',
+      verifiedDesc: 'Verified and certified',
+      verifiedInfo: 'This factory has been verified as a direct manufacturer, not a trading company.',
+      manufacturingType: 'Manufacturing Type',
+      noProducts: 'No products available',
+      certifiedBadge: 'Certified',
+      reviewsComingSoon: 'Reviews coming soon',
+      minOrder: 'Min Order',
+      unit: 'piece',
+    },
+    zh: {
+      notFound: '未找到工厂',
+      backToMarket: '返回市场',
+      requestQuote: '询价',
+      verified: '已验证',
+      since: '自',
+      employees: '员工',
+      overview: '概述',
+      products: '产品',
+      certifications: '认证',
+      reviews: '评价',
+      aboutFactory: '关于工厂',
+      defaultDescription: '专业生产高品质产品，价格有竞争力。',
+      mainProducts: '主要产品',
+      quickInfo: '快速信息',
+      productionCapacity: '生产能力',
+      moq: '最小起订量',
+      responseSpeed: '响应速度',
+      responseRate: '响应率',
+      verifiedFactory: '已验证工厂',
+      verifiedDesc: '已验证和认证',
+      verifiedInfo: '该工厂已被验证为直接制造商，而非贸易公司。',
+      manufacturingType: '制造类型',
+      noProducts: '暂无产品',
+      certifiedBadge: '已认证',
+      reviewsComingSoon: '评价即将推出',
+      minOrder: '起订量',
+      unit: '件',
+    },
+  };
+
+  const c = content[language];
 
   const handleRequestQuote = () => {
     navigate(`/services/quote?factory=${id}&name=${encodeURIComponent(factory?.name || '')}`);
@@ -53,9 +147,9 @@ const FactoryPage = () => {
         <Navbar />
         <div className="container mx-auto px-4 py-24 md:py-32 text-center">
           <Factory className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground mx-auto mb-4" />
-          <h1 className="text-xl md:text-2xl font-bold mb-4">المصنع غير موجود</h1>
+          <h1 className="text-xl md:text-2xl font-bold mb-4">{c.notFound}</h1>
           <Link to="/marketplace">
-            <Button>العودة للسوق</Button>
+            <Button>{c.backToMarket}</Button>
           </Link>
         </div>
         <Footer />
@@ -96,7 +190,7 @@ const FactoryPage = () => {
                 {factory.verification_status === 'verified' && (
                   <Badge className="bg-green-500 text-white gap-1 text-xs md:text-sm">
                     <CheckCircle className="w-3 h-3" />
-                    موثق بنسبة {factory.verification_score}%
+                    {c.verified} {factory.verification_score}%
                   </Badge>
                 )}
               </div>
@@ -104,36 +198,48 @@ const FactoryPage = () => {
               <div className="flex flex-wrap items-center gap-2 md:gap-4 text-white/70 mb-3 md:mb-4 text-xs md:text-sm">
                 <span className="flex items-center gap-1">
                   <MapPin className="w-3 h-3 md:w-4 md:h-4" />
-                  {factory.location || 'الصين'}
+                  {factory.location || (language === 'ar' ? 'الصين' : 'China')}
                 </span>
                 {factory.established_year && (
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3 h-3 md:w-4 md:h-4" />
-                    منذ {factory.established_year}
+                    {c.since} {factory.established_year}
                   </span>
                 )}
                 {factory.employees_count && (
                   <span className="flex items-center gap-1">
                     <Users className="w-3 h-3 md:w-4 md:h-4" />
-                    {factory.employees_count} موظف
+                    {factory.employees_count} {c.employees}
                   </span>
                 )}
               </div>
+
+              {/* Manufacturing Types */}
+              {factory.manufacturing_types && factory.manufacturing_types.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <Settings2 className="w-4 h-4 text-white/70" />
+                  {factory.manufacturing_types.map((type) => (
+                    <Badge key={type} variant="outline" className="text-white border-white/30 text-xs">
+                      {type}
+                    </Badge>
+                  ))}
+                </div>
+              )}
 
               <div className="flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm">
                 <div className="flex items-center gap-1 text-white">
                   <Star className="w-4 h-4 md:w-5 md:h-5 text-yellow-500 fill-yellow-500" />
                   <span className="font-bold text-base md:text-lg">{factory.rating || 4.5}</span>
-                  <span className="text-white/70">({factory.reviews_count || 0} تقييم)</span>
+                  <span className="text-white/70">({factory.reviews_count || 0})</span>
                 </div>
                 <span className="text-white/50 hidden sm:inline">|</span>
-                <span className="text-green-400">نسبة الرد {factory.response_rate || 90}%</span>
+                <span className="text-green-400">{c.responseRate} {factory.response_rate || 90}%</span>
                 <span className="text-white/50 hidden sm:inline">|</span>
-                <span className="text-white/70">رد خلال {factory.response_time || '< 24 ساعة'}</span>
+                <span className="text-white/70">{c.responseSpeed} {factory.response_time || '< 24h'}</span>
               </div>
             </div>
 
-            {/* Actions */}
+            {/* Actions - Only Request Quote button */}
             <div className="flex flex-wrap gap-2 md:gap-3 w-full md:w-auto">
               <Button 
                 variant="hero" 
@@ -142,7 +248,7 @@ const FactoryPage = () => {
                 onClick={handleRequestQuote}
               >
                 <FileText className="w-4 h-4 md:w-5 md:h-5 ml-1 md:ml-2" />
-                طلب عرض سعر
+                {c.requestQuote}
               </Button>
               <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
                 <Share2 className="w-4 h-4 md:w-5 md:h-5" />
@@ -157,10 +263,10 @@ const FactoryPage = () => {
         <div className="container mx-auto px-4">
           <Tabs defaultValue="overview" className="w-full">
             <TabsList className="w-full justify-start mb-6 md:mb-8 bg-muted/50 p-1 rounded-xl overflow-x-auto flex-nowrap">
-              <TabsTrigger value="overview" className="rounded-lg text-xs md:text-sm whitespace-nowrap">نظرة عامة</TabsTrigger>
-              <TabsTrigger value="products" className="rounded-lg text-xs md:text-sm whitespace-nowrap">المنتجات ({factoryProducts.length})</TabsTrigger>
-              <TabsTrigger value="certifications" className="rounded-lg text-xs md:text-sm whitespace-nowrap">الشهادات</TabsTrigger>
-              <TabsTrigger value="reviews" className="rounded-lg text-xs md:text-sm whitespace-nowrap">التقييمات</TabsTrigger>
+              <TabsTrigger value="overview" className="rounded-lg text-xs md:text-sm whitespace-nowrap">{c.overview}</TabsTrigger>
+              <TabsTrigger value="products" className="rounded-lg text-xs md:text-sm whitespace-nowrap">{c.products} ({factoryProducts.length})</TabsTrigger>
+              <TabsTrigger value="certifications" className="rounded-lg text-xs md:text-sm whitespace-nowrap">{c.certifications}</TabsTrigger>
+              <TabsTrigger value="reviews" className="rounded-lg text-xs md:text-sm whitespace-nowrap">{c.reviews}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview">
@@ -169,17 +275,39 @@ const FactoryPage = () => {
                 <div className="lg:col-span-2 space-y-6 md:space-y-8">
                   {/* About */}
                   <div className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 border border-border">
-                    <h2 className="text-lg md:text-xl font-bold mb-3 md:mb-4">عن المصنع</h2>
+                    <h2 className="text-lg md:text-xl font-bold mb-3 md:mb-4">{c.aboutFactory}</h2>
                     <p className="text-muted-foreground leading-relaxed text-sm md:text-base">
-                      {factory.description || 'مصنع متخصص في إنتاج منتجات عالية الجودة بأسعار تنافسية.'}
+                      {factory.description || c.defaultDescription}
                     </p>
                   </div>
 
+                  {/* Manufacturing Types */}
+                  {factory.manufacturing_types && factory.manufacturing_types.length > 0 && (
+                    <div className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 border border-border">
+                      <h2 className="text-lg md:text-xl font-bold mb-3 md:mb-4 flex items-center gap-2">
+                        <Settings2 className="w-5 h-5 text-primary" />
+                        {c.manufacturingType}
+                      </h2>
+                      <div className="flex flex-wrap gap-3">
+                        {factory.manufacturing_types.map((type) => (
+                          <div key={type} className="bg-primary/10 rounded-lg px-4 py-3 text-center">
+                            <p className="font-bold text-primary text-sm md:text-base">{type}</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {type === 'OEM' && (language === 'ar' ? 'تصنيع للغير' : 'Original Equipment')}
+                              {type === 'ODM' && (language === 'ar' ? 'تصميم وتصنيع' : 'Original Design')}
+                              {type === 'Private Label' && (language === 'ar' ? 'علامة تجارية خاصة' : 'Your Brand')}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Main Products */}
                   <div className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 border border-border">
-                    <h2 className="text-lg md:text-xl font-bold mb-3 md:mb-4">المنتجات الرئيسية</h2>
+                    <h2 className="text-lg md:text-xl font-bold mb-3 md:mb-4">{c.mainProducts}</h2>
                     <div className="flex flex-wrap gap-2">
-                      {(factory.main_products || ['منتجات متنوعة']).map((product, index) => (
+                      {(factory.main_products || [language === 'ar' ? 'منتجات متنوعة' : 'Various products']).map((product, index) => (
                         <Badge key={index} variant="secondary" className="py-1.5 md:py-2 px-3 md:px-4 text-xs md:text-sm">
                           {product}
                         </Badge>
@@ -193,7 +321,7 @@ const FactoryPage = () => {
                 <div className="space-y-4 md:space-y-6">
                   {/* Quick Stats */}
                   <div className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 border border-border">
-                    <h3 className="font-bold mb-3 md:mb-4 text-sm md:text-base">معلومات سريعة</h3>
+                    <h3 className="font-bold mb-3 md:mb-4 text-sm md:text-base">{c.quickInfo}</h3>
                     <div className="space-y-3 md:space-y-4">
                       {factory.production_capacity && (
                         <div className="flex items-center gap-3">
@@ -201,7 +329,7 @@ const FactoryPage = () => {
                             <Factory className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                           </div>
                           <div>
-                            <p className="text-xs md:text-sm text-muted-foreground">الطاقة الإنتاجية</p>
+                            <p className="text-xs md:text-sm text-muted-foreground">{c.productionCapacity}</p>
                             <p className="font-semibold text-sm md:text-base">{factory.production_capacity}</p>
                           </div>
                         </div>
@@ -211,7 +339,7 @@ const FactoryPage = () => {
                           <DollarSign className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                         </div>
                         <div>
-                          <p className="text-xs md:text-sm text-muted-foreground">الحد الأدنى للطلب</p>
+                          <p className="text-xs md:text-sm text-muted-foreground">{c.moq}</p>
                           <p className="font-semibold text-sm md:text-base">${factory.min_order_value || 1000}</p>
                         </div>
                       </div>
@@ -220,8 +348,8 @@ const FactoryPage = () => {
                           <Clock className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                         </div>
                         <div>
-                          <p className="text-xs md:text-sm text-muted-foreground">سرعة الرد</p>
-                          <p className="font-semibold text-sm md:text-base">{factory.response_time || '< 24 ساعة'}</p>
+                          <p className="text-xs md:text-sm text-muted-foreground">{c.responseSpeed}</p>
+                          <p className="font-semibold text-sm md:text-base">{factory.response_time || '< 24h'}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
@@ -229,7 +357,7 @@ const FactoryPage = () => {
                           <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                         </div>
                         <div>
-                          <p className="text-xs md:text-sm text-muted-foreground">نسبة الرد</p>
+                          <p className="text-xs md:text-sm text-muted-foreground">{c.responseRate}</p>
                           <p className="font-semibold text-sm md:text-base">{factory.response_rate || 90}%</p>
                         </div>
                       </div>
@@ -241,12 +369,12 @@ const FactoryPage = () => {
                     <div className="flex items-center gap-3 mb-3 md:mb-4">
                       <Shield className="w-6 h-6 md:w-8 md:h-8 text-green-500" />
                       <div>
-                        <h3 className="font-bold text-green-700 text-sm md:text-base">مصنع موثق</h3>
-                        <p className="text-xs md:text-sm text-green-600">تم التحقق والاعتماد</p>
+                        <h3 className="font-bold text-green-700 text-sm md:text-base">{c.verifiedFactory}</h3>
+                        <p className="text-xs md:text-sm text-green-600">{c.verifiedDesc}</p>
                       </div>
                     </div>
                     <p className="text-xs md:text-sm text-muted-foreground">
-                      هذا المصنع تم التحقق منه بنسبة {factory.verification_score || 90}% كمصنع مباشر وليس وسيط.
+                      {c.verifiedInfo} ({factory.verification_score || 90}%)
                     </p>
                   </div>
                 </div>
@@ -256,12 +384,12 @@ const FactoryPage = () => {
             <TabsContent value="products">
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 {factoryProducts.map((product) => (
-                  <div key={product.id} className="bg-card rounded-xl md:rounded-2xl overflow-hidden border border-border hover:shadow-xl transition-all">
+                  <div key={product.id} className="bg-card rounded-xl md:rounded-2xl overflow-hidden border border-border hover:shadow-xl transition-all group">
                     <div className="relative h-36 md:h-48 overflow-hidden">
                       <img
                         src={product.images[0]}
                         alt={product.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                     <div className="p-3 md:p-4">
@@ -274,7 +402,7 @@ const FactoryPage = () => {
                         <Badge variant="secondary" className="text-xs">{product.unit}</Badge>
                       </div>
                       <p className="text-xs md:text-sm text-muted-foreground">
-                        الحد الأدنى: {product.minOrderQuantity} {product.unit}
+                        {c.minOrder}: {product.minOrderQuantity} {c.unit}
                       </p>
                     </div>
                   </div>
@@ -284,7 +412,7 @@ const FactoryPage = () => {
               {factoryProducts.length === 0 && (
                 <div className="text-center py-12 md:py-16">
                   <Package className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground text-sm md:text-base">لا توجد منتجات حالياً</p>
+                  <p className="text-muted-foreground text-sm md:text-base">{c.noProducts}</p>
                 </div>
               )}
             </TabsContent>
@@ -292,10 +420,10 @@ const FactoryPage = () => {
             <TabsContent value="certifications">
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {(factory.certifications || ['ISO 9001']).map((cert, index) => (
-                  <div key={index} className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 border border-border text-center">
+                  <div key={index} className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 border border-border text-center hover:shadow-lg transition-all">
                     <Award className="w-10 h-10 md:w-12 md:h-12 text-primary mx-auto mb-3 md:mb-4" />
                     <h3 className="font-bold text-sm md:text-base">{cert}</h3>
-                    <p className="text-xs md:text-sm text-muted-foreground mt-1 md:mt-2">شهادة معتمدة</p>
+                    <p className="text-xs md:text-sm text-muted-foreground mt-1 md:mt-2">{c.certifiedBadge}</p>
                   </div>
                 ))}
               </div>
@@ -304,7 +432,7 @@ const FactoryPage = () => {
             <TabsContent value="reviews">
               <div className="text-center py-12 md:py-16">
                 <Star className="w-12 h-12 md:w-16 md:h-16 text-muted-foreground mx-auto mb-4" />
-                <p className="text-muted-foreground text-sm md:text-base">التقييمات ستظهر قريباً</p>
+                <p className="text-muted-foreground text-sm md:text-base">{c.reviewsComingSoon}</p>
               </div>
             </TabsContent>
           </Tabs>

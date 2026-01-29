@@ -1,3 +1,6 @@
+// Manufacturing Types for B2B Platform
+export type ManufacturingType = 'OEM' | 'ODM' | 'Private Label' | 'OEM/ODM';
+
 // Factory Types
 export interface Factory {
   id: string;
@@ -15,6 +18,7 @@ export interface Factory {
   employeesCount: string;
   productionCapacity: string;
   certifications: string[];
+  manufacturingTypes: ManufacturingType[];
   verificationStatus: 'verified' | 'pending' | 'rejected';
   verificationScore: number;
   isDirectFactory: boolean;
@@ -24,7 +28,6 @@ export interface Factory {
   responseTime: string;
   minOrderValue: number;
   mainProducts: string[];
-  exportCountries: string[];
   createdAt: string;
   updatedAt: string;
 }
