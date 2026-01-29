@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { mockFactories } from '@/data/mockData';
 
+export type ManufacturingType = 'OEM' | 'ODM' | 'Private Label' | 'OEM/ODM';
+
 export interface Factory {
   id: string;
   name: string;
@@ -21,6 +23,7 @@ export interface Factory {
   employees_count: string | null;
   production_capacity: string | null;
   certifications: string[] | null;
+  manufacturing_types?: ManufacturingType[] | null;
   verification_status: string | null;
   verification_score: number | null;
   is_direct_factory: boolean | null;
@@ -30,7 +33,6 @@ export interface Factory {
   response_time: string | null;
   min_order_value: number | null;
   main_products: string[] | null;
-  export_countries: string[] | null;
   created_at: string;
   updated_at: string;
 }
@@ -76,6 +78,7 @@ export const useFactories = (category?: string, searchQuery?: string) => {
           employees_count: f.employeesCount,
           production_capacity: f.productionCapacity,
           certifications: f.certifications,
+          manufacturing_types: f.manufacturingTypes,
           verification_status: f.verificationStatus,
           verification_score: f.verificationScore,
           is_direct_factory: f.isDirectFactory,
@@ -85,7 +88,6 @@ export const useFactories = (category?: string, searchQuery?: string) => {
           response_time: f.responseTime,
           min_order_value: f.minOrderValue,
           main_products: f.mainProducts,
-          export_countries: f.exportCountries,
           created_at: f.createdAt,
           updated_at: f.updatedAt,
         }));
@@ -112,6 +114,7 @@ export const useFactories = (category?: string, searchQuery?: string) => {
           employees_count: f.employeesCount,
           production_capacity: f.productionCapacity,
           certifications: f.certifications,
+          manufacturing_types: f.manufacturingTypes,
           verification_status: f.verificationStatus,
           verification_score: f.verificationScore,
           is_direct_factory: f.isDirectFactory,
@@ -121,7 +124,6 @@ export const useFactories = (category?: string, searchQuery?: string) => {
           response_time: f.responseTime,
           min_order_value: f.minOrderValue,
           main_products: f.mainProducts,
-          export_countries: f.exportCountries,
           created_at: f.createdAt,
           updated_at: f.updatedAt,
         }));
@@ -179,6 +181,7 @@ export const useFactory = (id: string) => {
             employees_count: mockFactory.employeesCount,
             production_capacity: mockFactory.productionCapacity,
             certifications: mockFactory.certifications,
+            manufacturing_types: mockFactory.manufacturingTypes,
             verification_status: mockFactory.verificationStatus,
             verification_score: mockFactory.verificationScore,
             is_direct_factory: mockFactory.isDirectFactory,
@@ -188,7 +191,6 @@ export const useFactory = (id: string) => {
             response_time: mockFactory.responseTime,
             min_order_value: mockFactory.minOrderValue,
             main_products: mockFactory.mainProducts,
-            export_countries: mockFactory.exportCountries,
             created_at: mockFactory.createdAt,
             updated_at: mockFactory.updatedAt,
           } as Factory;
