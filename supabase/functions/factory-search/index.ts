@@ -44,6 +44,40 @@ function sanitizeText(input: string): string {
     .slice(0, MAX_PRODUCT_NAME_LENGTH);
 }
 
+// Sanitize error messages - map to safe categories without exposing internals
+function sanitizeErrorForStorage(error: Error | string): string {
+  const message = (typeof error === 'string' ? error : error.message || '').toLowerCase();
+  
+  // Map errors to safe, generic categories
+  if (message.includes('timeout') || message.includes('timed out')) {
+    return 'request_timeout';
+  }
+  if (message.includes('network') || message.includes('fetch') || message.includes('connection')) {
+    return 'network_error';
+  }
+  if (message.includes('api') || message.includes('external') || message.includes('service')) {
+    return 'external_service_error';
+  }
+  if (message.includes('rate limit') || message.includes('too many')) {
+    return 'rate_limit_exceeded';
+  }
+  if (message.includes('auth') || message.includes('unauthorized') || message.includes('forbidden')) {
+    return 'authorization_error';
+  }
+  if (message.includes('invalid') || message.includes('validation')) {
+    return 'validation_error';
+  }
+  if (message.includes('not found') || message.includes('404')) {
+    return 'resource_not_found';
+  }
+  if (message.includes('parse') || message.includes('json')) {
+    return 'data_processing_error';
+  }
+  
+  // Default category - never expose raw error messages
+  return 'processing_error';
+}
+
 // Validate and sanitize all inputs
 function validateInputs(body: any): { valid: boolean; error?: string; sanitized?: any } {
   const { imageBase64, productUrl, productName, hsCode, optional } = body;
@@ -680,14 +714,15 @@ Deno.serve(async (req) => {
       );
 
     } catch (pipelineError: any) {
+      // Log detailed error server-side only - never expose to users
       console.error('Pipeline error:', pipelineError);
       
-      // Update search status to failed - store detailed error in DB but return generic message
+      // Update search status to failed - store SANITIZED error category only
       await supabase
         .from('factory_searches')
         .update({ 
           status: 'failed',
-          error_message: pipelineError.message 
+          error_message: sanitizeErrorForStorage(pipelineError)
         })
         .eq('id', searchId);
 

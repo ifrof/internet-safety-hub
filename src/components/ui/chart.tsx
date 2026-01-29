@@ -58,6 +58,27 @@ const ChartContainer = React.forwardRef<
 });
 ChartContainer.displayName = "Chart";
 
+// Validate CSS color format to prevent XSS
+const isValidCssColor = (color: string): boolean => {
+  if (!color || typeof color !== 'string') return false;
+  const trimmed = color.trim();
+  // Allow hex colors, hsl/hsla, rgb/rgba, and named colors (no special chars that could break CSS)
+  const cssColorRegex = /^(#[0-9a-fA-F]{3,8}|rgba?\([^)]+\)|hsla?\([^)]+\)|[a-zA-Z]+)$/;
+  // Also ensure no dangerous characters that could escape CSS context
+  const hasDangerousChars = /[<>{};"'\\]/.test(trimmed);
+  return cssColorRegex.test(trimmed) && !hasDangerousChars;
+};
+
+// Escape selector ID to prevent CSS injection
+const escapeSelector = (id: string): string => {
+  return id.replace(/[^a-zA-Z0-9_-]/g, '');
+};
+
+// Escape CSS key names
+const escapeCssKey = (key: string): string => {
+  return key.replace(/[^a-zA-Z0-9_-]/g, '');
+};
+
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(([_, config]) => config.theme || config.color);
 
@@ -65,18 +86,26 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null;
   }
 
+  const safeId = escapeSelector(id);
+
   return (
     <style
       dangerouslySetInnerHTML={{
         __html: Object.entries(THEMES)
           .map(
             ([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
+${prefix} [data-chart=${safeId}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
     const color = itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color;
-    return color ? `  --color-${key}: ${color};` : null;
+    const safeKey = escapeCssKey(key);
+    // Only include valid, sanitized colors
+    if (color && isValidCssColor(color)) {
+      return `  --color-${safeKey}: ${color.trim()};`;
+    }
+    return null;
   })
+  .filter(Boolean)
   .join("\n")}
 }
 `,
