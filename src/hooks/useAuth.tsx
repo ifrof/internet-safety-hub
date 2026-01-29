@@ -3,11 +3,13 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
+type UserType = 'buyer' | 'factory' | 'admin';
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  signUp: (email: string, password: string, fullName?: string, companyName?: string) => Promise<{ error: any }>;
+  signUp: (email: string, password: string, fullName?: string, companyName?: string, userType?: UserType) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
@@ -40,10 +42,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, fullName?: string, companyName?: string) => {
+  const signUp = async (email: string, password: string, fullName?: string, companyName?: string, userType: UserType = 'buyer') => {
     const redirectUrl = `${window.location.origin}/`;
     
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -51,6 +53,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         data: {
           full_name: fullName,
           company_name: companyName,
+          user_type: userType,
         }
       }
     });
@@ -68,9 +71,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         variant: 'destructive',
       });
     } else {
+      // Update profile with user_type after signup
+      if (data.user) {
+        setTimeout(async () => {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .update({
+              email: email,
+              company_name: companyName,
+              user_type: userType,
+            })
+            .eq('user_id', data.user!.id);
+
+          if (profileError) {
+            console.error('Error updating profile:', profileError);
+          }
+        }, 0);
+      }
+      
       toast({
         title: 'تم إنشاء الحساب',
-        description: 'مرحباً بك في IFROF!',
+        description: userType === 'factory' ? 'مرحباً بك! يمكنك الآن إضافة مصنعك' : 'مرحباً بك في IFROF!',
       });
     }
 

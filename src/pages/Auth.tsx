@@ -3,7 +3,8 @@ import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Mail, Lock, User, Building, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ArrowLeft, Mail, Lock, User, Building, Eye, EyeOff, Loader2, Factory, ShoppingBag } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { z } from 'zod';
 import { lovable } from '@/integrations/lovable/index';
@@ -17,6 +18,7 @@ const loginSchema = z.object({
 const signupSchema = loginSchema.extend({
   fullName: z.string().min(2, 'الاسم يجب أن يكون حرفين على الأقل'),
   companyName: z.string().optional(),
+  userType: z.enum(['buyer', 'factory']),
 });
 
 const Auth = () => {
@@ -32,6 +34,7 @@ const Auth = () => {
     password: '',
     fullName: '',
     companyName: '',
+    userType: 'buyer' as 'buyer' | 'factory',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -86,7 +89,8 @@ const Auth = () => {
           formData.email, 
           formData.password, 
           formData.fullName,
-          formData.companyName
+          formData.companyName,
+          formData.userType
         );
         if (!error) {
           navigate('/dashboard');
@@ -172,6 +176,37 @@ const Auth = () => {
           <form onSubmit={handleSubmit} className="space-y-4 md:space-y-5">
             {mode === 'signup' && (
               <>
+                {/* User Type Selection */}
+                <div className="space-y-2">
+                  <Label className="text-sm">نوع الحساب</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, userType: 'buyer' })}
+                      className={`flex items-center justify-center gap-2 p-3 md:p-4 rounded-xl border-2 transition-all ${
+                        formData.userType === 'buyer'
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-border bg-muted/50 text-muted-foreground hover:border-primary/50'
+                      }`}
+                    >
+                      <ShoppingBag className="w-5 h-5" />
+                      <span className="font-medium text-sm">مشتري</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, userType: 'factory' })}
+                      className={`flex items-center justify-center gap-2 p-3 md:p-4 rounded-xl border-2 transition-all ${
+                        formData.userType === 'factory'
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-border bg-muted/50 text-muted-foreground hover:border-primary/50'
+                      }`}
+                    >
+                      <Factory className="w-5 h-5" />
+                      <span className="font-medium text-sm">مصنع</span>
+                    </button>
+                  </div>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="fullName" className="text-sm">الاسم الكامل</Label>
                   <div className="relative">
@@ -190,16 +225,19 @@ const Auth = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="companyName" className="text-sm">اسم الشركة (اختياري)</Label>
+                  <Label htmlFor="companyName" className="text-sm">
+                    {formData.userType === 'factory' ? 'اسم المصنع' : 'اسم الشركة (اختياري)'}
+                  </Label>
                   <div className="relative">
                     <Building className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-muted-foreground" />
                     <Input
                       id="companyName"
                       type="text"
-                      placeholder="شركة التجارة العربية"
+                      placeholder={formData.userType === 'factory' ? 'مصنع النجاح للإلكترونيات' : 'شركة التجارة العربية'}
                       value={formData.companyName}
                       onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                       className="pr-10 text-sm md:text-base"
+                      required={formData.userType === 'factory'}
                     />
                   </div>
                 </div>
