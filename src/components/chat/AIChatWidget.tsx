@@ -28,7 +28,7 @@ const AIChatWidget = () => {
 
   const translations = {
     ar: {
-      title: 'المساعد الذكي',
+      title: 'IFROF CUSTOMER SUPPORT',
       subtitle: 'نحن هنا لمساعدتك',
       placeholder: 'اكتب رسالتك...',
       greeting: 'مرحباً! 👋 أنا المساعد الذكي لـ IFROF. كيف يمكنني مساعدتك اليوم؟',
@@ -42,7 +42,7 @@ const AIChatWidget = () => {
       ] as QuickQuestion[],
     },
     en: {
-      title: 'Smart Assistant',
+      title: 'IFROF CUSTOMER SUPPORT',
       subtitle: 'We are here to help',
       placeholder: 'Type your message...',
       greeting: 'Hello! 👋 I am the IFROF Smart Assistant. How can I help you today?',
@@ -56,7 +56,7 @@ const AIChatWidget = () => {
       ] as QuickQuestion[],
     },
     zh: {
-      title: '智能助手',
+      title: 'IFROF CUSTOMER SUPPORT',
       subtitle: '我们在这里帮助您',
       placeholder: '输入您的消息...',
       greeting: '您好！👋 我是IFROF智能助手。今天我能为您做什么？',
