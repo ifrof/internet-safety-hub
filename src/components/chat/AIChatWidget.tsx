@@ -2,10 +2,14 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { MessageSquare, X, Send, Loader2, Bot, User, Sparkles } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MessageSquare, X, Send, Bot, User, Sparkles, UserRound, HelpCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ReactMarkdown from 'react-markdown';
+import ChatFAQ from './ChatFAQ';
+import HumanSupportRequest from './HumanSupportRequest';
+import { toast } from 'sonner';
 
 interface Message {
   id: string;
@@ -18,12 +22,15 @@ interface QuickQuestion {
   question: string;
 }
 
+type ChatView = 'chat' | 'faq' | 'human';
+
 const AIChatWidget = () => {
   const { language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [currentView, setCurrentView] = useState<ChatView>('chat');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const translations = {
@@ -40,6 +47,10 @@ const AIChatWidget = () => {
         { label: '✅ التحقق من المصانع', question: 'كيف يتم التحقق من المصانع على المنصة؟' },
         { label: '🚚 الشحن', question: 'كيف تعمل خدمات الشحن الدولي؟' },
       ] as QuickQuestion[],
+      tabChat: 'الدردشة',
+      tabFAQ: 'FAQ',
+      humanSupport: 'تحدث مع موظف',
+      notificationSent: 'تم إرسال إشعار للموظف',
     },
     en: {
       title: 'IFROF CUSTOMER SUPPORT',
@@ -54,6 +65,10 @@ const AIChatWidget = () => {
         { label: '✅ Factory Verification', question: 'How do you verify factories on the platform?' },
         { label: '🚚 Shipping', question: 'How does international shipping work?' },
       ] as QuickQuestion[],
+      tabChat: 'Chat',
+      tabFAQ: 'FAQ',
+      humanSupport: 'Talk to Human',
+      notificationSent: 'Notification sent to support',
     },
     zh: {
       title: 'IFROF CUSTOMER SUPPORT',
@@ -68,6 +83,10 @@ const AIChatWidget = () => {
         { label: '✅ 工厂验证', question: '你们如何验证平台上的工厂？' },
         { label: '🚚 物流', question: '国际物流是如何运作的？' },
       ] as QuickQuestion[],
+      tabChat: '聊天',
+      tabFAQ: 'FAQ',
+      humanSupport: '人工客服',
+      notificationSent: '已通知客服',
     },
   };
 
@@ -123,6 +142,13 @@ const AIChatWidget = () => {
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
+      
+      // Show notification toast for new response
+      if (!document.hasFocus()) {
+        toast.info(t.notificationSent, {
+          description: assistantMessage.content.substring(0, 50) + '...',
+        });
+      }
     } catch (error) {
       console.error('Chat error:', error);
       setMessages((prev) => [
@@ -149,6 +175,8 @@ const AIChatWidget = () => {
     sendMessage(question);
   };
 
+  const conversationHistory = messages.map(m => `${m.role}: ${m.content}`);
+
   return (
     <>
       {/* Floating Button */}
@@ -169,7 +197,7 @@ const AIChatWidget = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-24 left-6 z-50 w-[380px] max-w-[calc(100vw-48px)] bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300">
+        <div className="fixed bottom-24 left-6 z-50 w-[400px] max-w-[calc(100vw-48px)] bg-card border border-border rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-300">
           {/* Header */}
           <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-4">
             <div className="flex items-center gap-3">
@@ -191,100 +219,143 @@ const AIChatWidget = () => {
             </div>
           </div>
 
-          {/* Messages */}
-          <ScrollArea className="h-[320px] p-4">
-            <div className="space-y-4">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex items-start gap-2 ${
-                    msg.role === 'user' ? 'flex-row-reverse' : ''
-                  }`}
-                >
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      msg.role === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-gradient-to-br from-primary/20 to-primary/10'
-                    }`}
-                  >
-                    {msg.role === 'user' ? (
-                      <User className="w-4 h-4" />
-                    ) : (
-                      <Bot className="w-4 h-4 text-primary" />
-                    )}
-                  </div>
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
-                      msg.role === 'user'
-                        ? 'bg-primary text-primary-foreground rounded-tr-sm'
-                        : 'bg-muted rounded-tl-sm'
-                    }`}
-                  >
-                    <div className="text-sm prose prose-sm dark:prose-invert max-w-none [&>p]:m-0">
-                      <ReactMarkdown>{msg.content}</ReactMarkdown>
-                    </div>
-                  </div>
-                </div>
-              ))}
+          {/* Human Support View */}
+          {currentView === 'human' ? (
+            <HumanSupportRequest 
+              onBack={() => setCurrentView('chat')} 
+              conversationHistory={conversationHistory}
+            />
+          ) : (
+            <>
+              {/* Tabs */}
+              <Tabs defaultValue="chat" className="w-full">
+                <TabsList className="w-full grid grid-cols-2 rounded-none border-b border-border bg-muted/50">
+                  <TabsTrigger value="chat" className="text-xs gap-1.5">
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    {t.tabChat}
+                  </TabsTrigger>
+                  <TabsTrigger value="faq" className="text-xs gap-1.5">
+                    <HelpCircle className="w-3.5 h-3.5" />
+                    {t.tabFAQ}
+                  </TabsTrigger>
+                </TabsList>
 
-              {/* Quick Questions - Show only after greeting */}
-              {messages.length === 1 && !isLoading && (
-                <div className="mt-4 space-y-2">
-                  <p className="text-xs text-muted-foreground font-medium">{t.quickQuestionsTitle}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {t.quickQuestions.map((q, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleQuickQuestion(q.question)}
-                        className="text-xs bg-muted hover:bg-muted/80 px-3 py-1.5 rounded-full transition-colors border border-border hover:border-primary/50"
+                <TabsContent value="chat" className="m-0">
+                  {/* Messages */}
+                  <ScrollArea className="h-[280px] p-4">
+                    <div className="space-y-4">
+                      {messages.map((msg) => (
+                        <div
+                          key={msg.id}
+                          className={`flex items-start gap-2 ${
+                            msg.role === 'user' ? 'flex-row-reverse' : ''
+                          }`}
+                        >
+                          <div
+                            className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                              msg.role === 'user'
+                                ? 'bg-primary text-primary-foreground'
+                                : 'bg-gradient-to-br from-primary/20 to-primary/10'
+                            }`}
+                          >
+                            {msg.role === 'user' ? (
+                              <User className="w-4 h-4" />
+                            ) : (
+                              <Bot className="w-4 h-4 text-primary" />
+                            )}
+                          </div>
+                          <div
+                            className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
+                              msg.role === 'user'
+                                ? 'bg-primary text-primary-foreground rounded-tr-sm'
+                                : 'bg-muted rounded-tl-sm'
+                            }`}
+                          >
+                            <div className="text-sm prose prose-sm dark:prose-invert max-w-none [&>p]:m-0">
+                              <ReactMarkdown>{msg.content}</ReactMarkdown>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Quick Questions - Show only after greeting */}
+                      {messages.length === 1 && !isLoading && (
+                        <div className="mt-4 space-y-2">
+                          <p className="text-xs text-muted-foreground font-medium">{t.quickQuestionsTitle}</p>
+                          <div className="flex flex-wrap gap-2">
+                            {t.quickQuestions.map((q, index) => (
+                              <button
+                                key={index}
+                                onClick={() => handleQuickQuestion(q.question)}
+                                className="text-xs bg-muted hover:bg-muted/80 px-3 py-1.5 rounded-full transition-colors border border-border hover:border-primary/50"
+                              >
+                                {q.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {isLoading && (
+                        <div className="flex items-start gap-2">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                            <Bot className="w-4 h-4 text-primary" />
+                          </div>
+                          <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-3">
+                            <div className="flex gap-1">
+                              <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                              <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                              <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      <div ref={messagesEndRef} />
+                    </div>
+                  </ScrollArea>
+
+                  {/* Human Support Button */}
+                  <div className="px-4 py-2 border-t border-border bg-muted/30">
+                    <button
+                      onClick={() => setCurrentView('human')}
+                      className="w-full flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors py-1.5"
+                    >
+                      <UserRound className="w-4 h-4" />
+                      {t.humanSupport}
+                    </button>
+                  </div>
+
+                  {/* Input */}
+                  <div className="p-4 border-t border-border bg-card">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder={t.placeholder}
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        disabled={isLoading}
+                        className="flex-1 rounded-full bg-muted border-0 focus-visible:ring-primary"
+                      />
+                      <Button
+                        onClick={() => sendMessage()}
+                        disabled={!input.trim() || isLoading}
+                        size="icon"
+                        className="rounded-full w-10 h-10"
                       >
-                        {q.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {isLoading && (
-                <div className="flex items-start gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                    <Bot className="w-4 h-4 text-primary" />
-                  </div>
-                  <div className="bg-muted rounded-2xl rounded-tl-sm px-4 py-3">
-                    <div className="flex gap-1">
-                      <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                        <Send className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-          </ScrollArea>
+                </TabsContent>
 
-          {/* Input */}
-          <div className="p-4 border-t border-border bg-card">
-            <div className="flex gap-2">
-              <Input
-                placeholder={t.placeholder}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-                disabled={isLoading}
-                className="flex-1 rounded-full bg-muted border-0 focus-visible:ring-primary"
-              />
-              <Button
-                onClick={() => sendMessage()}
-                disabled={!input.trim() || isLoading}
-                size="icon"
-                className="rounded-full w-10 h-10"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
+                <TabsContent value="faq" className="m-0">
+                  <ScrollArea className="h-[360px] p-4">
+                    <ChatFAQ />
+                  </ScrollArea>
+                </TabsContent>
+              </Tabs>
+            </>
+          )}
         </div>
       )}
     </>
