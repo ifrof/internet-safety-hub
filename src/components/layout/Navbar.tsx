@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Search, User, Bell, MessageSquare } from 'lucide-react';
+import { Menu, X, Search, User, Bell, MessageSquare, Shield } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,12 +12,14 @@ import {
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/hooks/useAuth';
+import { useUserRole } from '@/hooks/useUserRole';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const { t, language } = useLanguage();
   const { user, signOut } = useAuth();
+  const { isAdmin } = useUserRole();
   const isHomePage = location.pathname === '/';
 
   const navLinks = [
@@ -97,6 +99,17 @@ const Navbar = () => {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
+                    {isAdmin && (
+                      <>
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin" className="flex items-center gap-2 text-primary font-medium">
+                            <Shield className="w-4 h-4" />
+                            {language === 'ar' ? 'لوحة الإدارة' : language === 'zh' ? '管理面板' : 'Admin Panel'}
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                      </>
+                    )}
                     <DropdownMenuItem asChild>
                       <Link to="/dashboard">{t('nav.dashboard')}</Link>
                     </DropdownMenuItem>
