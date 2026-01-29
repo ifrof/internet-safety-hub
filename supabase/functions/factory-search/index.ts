@@ -503,20 +503,19 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Verify the user's token
+    // Verify the user's token using getUser
     const authClient = getSupabaseClient(authHeader);
-    const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token);
+    const { data: userData, error: userError } = await authClient.auth.getUser();
 
-    if (claimsError || !claimsData?.claims) {
-      console.error('Auth error:', claimsError);
+    if (userError || !userData?.user) {
+      console.error('Auth error:', userError);
       return new Response(
         JSON.stringify({ error: 'جلسة غير صالحة، يرجى تسجيل الدخول مرة أخرى' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const userId = claimsData.claims.sub;
+    const userId = userData.user.id;
     console.log(`Factory search requested by user: ${userId}`);
 
     // Use service role client for rate limit check
