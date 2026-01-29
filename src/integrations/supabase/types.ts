@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      contact_access_log: {
+        Row: {
+          accessed_at: string | null
+          factory_id: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          accessed_at?: string | null
+          factory_id: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          accessed_at?: string | null
+          factory_id?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       conversations: {
         Row: {
           created_at: string
@@ -634,6 +655,12 @@ export type Database = {
           company_name: string | null
           country: string | null
           created_at: string
+          daily_contact_access_count: number | null
+          daily_contact_reset_at: string | null
+          daily_message_count: number | null
+          daily_message_reset_at: string | null
+          daily_search_count: number | null
+          daily_search_reset_at: string | null
           email: string | null
           full_name: string | null
           id: string
@@ -657,6 +684,12 @@ export type Database = {
           company_name?: string | null
           country?: string | null
           created_at?: string
+          daily_contact_access_count?: number | null
+          daily_contact_reset_at?: string | null
+          daily_message_count?: number | null
+          daily_message_reset_at?: string | null
+          daily_search_count?: number | null
+          daily_search_reset_at?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
@@ -680,6 +713,12 @@ export type Database = {
           company_name?: string | null
           country?: string | null
           created_at?: string
+          daily_contact_access_count?: number | null
+          daily_contact_reset_at?: string | null
+          daily_message_count?: number | null
+          daily_message_reset_at?: string | null
+          daily_search_count?: number | null
+          daily_search_reset_at?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
@@ -872,6 +911,31 @@ export type Database = {
       }
     }
     Functions: {
+      check_contact_rate_limit: {
+        Args: { p_user_id: string }
+        Returns: {
+          allowed: boolean
+          remaining: number
+          reset_at: string
+        }[]
+      }
+      check_message_rate_limit: {
+        Args: { p_user_id: string }
+        Returns: {
+          allowed: boolean
+          remaining: number
+          reset_at: string
+        }[]
+      }
+      check_search_rate_limit: {
+        Args: { p_user_id: string }
+        Returns: {
+          allowed: boolean
+          remaining: number
+          reset_at: string
+        }[]
+      }
+      cleanup_expired_searches: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -879,6 +943,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      reset_daily_quotas: { Args: never; Returns: undefined }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
