@@ -1,73 +1,107 @@
-# Welcome to your Lovable project
+# IFROF - Direct Factory Platform
 
-## Project info
+منصة IFROF تربط المشترين مباشرة بالمصانع الصينية الموثقة. نقضي على الوسطاء ونضمن لك أفضل الأسعار.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Tech Stack
 
-## How can I edit this code?
+- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui
+- **Backend**: Supabase (PostgreSQL, Auth, Edge Functions)
+- **APIs**: Firecrawl, Perplexity AI
 
-There are several ways of editing your application.
+## Getting Started
 
-**Use Lovable**
+### Prerequisites
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- Node.js 18+ 
+- npm or bun
+- Supabase account
 
-Changes made via Lovable will be committed automatically to this repo.
+### Installation
 
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
+```bash
+# Clone the repository
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Install dependencies
+npm install
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your Supabase credentials
+
+# Start development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Environment Variables
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Create a `.env` file with:
 
-**Use GitHub Codespaces**
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
+VITE_SUPABASE_PROJECT_ID=your_project_id
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Supabase Secrets
 
-## What technologies are used for this project?
+Set these secrets in your Supabase project:
 
-This project is built with:
+- `FIRECRAWL_API_KEY` - Firecrawl API key
+- `PERPLEXITY_API_KEY` - Perplexity API key
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Deployment
 
-## How can I deploy this project?
+### Build for Production
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+```bash
+npm run build
+```
 
-## Can I connect a custom domain to my Lovable project?
+The build output will be in the `dist/` folder.
 
-Yes, you can!
+### Deploy to Railway/Vercel/Netlify
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+1. Connect your GitHub repository
+2. Set build command: `npm run build`
+3. Set publish directory: `dist`
+4. Add environment variables
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+### Edge Functions
+
+Deploy edge functions to Supabase:
+
+```bash
+supabase functions deploy api
+supabase functions deploy factory-search
+supabase functions deploy ai-chat
+```
+
+## Project Structure
+
+```
+├── src/
+│   ├── components/     # React components
+│   ├── hooks/          # Custom hooks
+│   ├── pages/          # Page components
+│   ├── contexts/       # React contexts
+│   ├── integrations/   # Supabase client
+│   └── data/           # Mock data
+├── supabase/
+│   ├── functions/      # Edge functions
+│   └── config.toml     # Supabase config
+└── public/             # Static assets
+```
+
+## Features
+
+- 🔍 Factory Search - Find verified Chinese manufacturers
+- 📦 Import Orders - Track your orders
+- 💬 Messaging - Direct communication with factories
+- 🔐 Authentication - Secure user accounts
+- 🌐 Multi-language - Arabic, English, Chinese
+
+## License
+
+© 2026 IFROF. All rights reserved.
