@@ -161,7 +161,7 @@ const Services = () => {
           <p className="text-muted-foreground mb-6 md:mb-8 max-w-xl mx-auto text-sm md:text-base">
             تواصل معنا لنفهم احتياجاتك ونقدم لك الحل المناسب
           </p>
-          <Link to="/auth?mode=signup">
+          <Link to="/contact">
             <Button variant="hero" size="lg" className="md:size-xl">
               تواصل مع فريق الدعم
               <ArrowLeft className="w-5 h-5 mr-2" />

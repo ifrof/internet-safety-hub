@@ -23,7 +23,7 @@ const Navbar = () => {
           <a href="#shipping" className="hover:text-white transition-colors">الشحن</a>
           <a href="#blog" className="hover:text-white transition-colors">المدونة</a>
           <a href="#support" className="hover:text-white transition-colors">الدعم</a>
-          <a href="#ai" className="hover:text-white transition-colors">محقق IFROF الذكي للمصانع</a>
+          <a href="/direct-factory" className="hover:text-white transition-colors">بحث متقدم</a>
         </div>
 
         {/* CTA */}
