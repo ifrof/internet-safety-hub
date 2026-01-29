@@ -119,10 +119,12 @@ const Footer = () => {
             <h3 className="font-bold text-base md:text-lg mb-4 md:mb-6">{c.quickLinks}</h3>
             <ul className="space-y-2 md:space-y-3">
               <li><Link to="/marketplace" className="text-white/70 hover:text-primary transition-colors text-sm md:text-base">{c.marketplace}</Link></li>
-              <li><Link to="/marketplace" className="text-white/70 hover:text-primary transition-colors text-sm md:text-base">{c.advancedSearch}</Link></li>
+              <li><Link to="/direct-factory" className="text-white/70 hover:text-primary transition-colors text-sm md:text-base">{c.advancedSearch}</Link></li>
               <li><Link to="/services" className="text-white/70 hover:text-primary transition-colors text-sm md:text-base">{c.services}</Link></li>
               <li><Link to="/pricing" className="text-white/70 hover:text-primary transition-colors text-sm md:text-base">{c.pricing}</Link></li>
               <li><Link to="/blog" className="text-white/70 hover:text-primary transition-colors text-sm md:text-base">{c.blog}</Link></li>
+              <li><Link to="/about" className="text-white/70 hover:text-primary transition-colors text-sm md:text-base">{language === 'ar' ? 'عن الموقع' : language === 'zh' ? '关于我们' : 'About'}</Link></li>
+              <li><Link to="/contact" className="text-white/70 hover:text-primary transition-colors text-sm md:text-base">{language === 'ar' ? 'اتصل بنا' : language === 'zh' ? '联系我们' : 'Contact'}</Link></li>
             </ul>
           </div>
 

@@ -7,6 +7,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import Index from "./pages/Index";
 import Marketplace from "./pages/Marketplace";
 import FactoryPage from "./pages/FactoryPage";
+import ProductDetail from "./pages/ProductDetail";
 import Services from "./pages/Services";
 import ServiceDetail from "./pages/ServiceDetail";
 import Pricing from "./pages/Pricing";
@@ -29,6 +30,8 @@ import NotFound from "./pages/NotFound";
 import DirectFactory from "./pages/DirectFactory";
 import FactorySearch from "./pages/FactorySearch";
 import FactoryResults from "./pages/FactoryResults";
+import About from "./pages/About";
+import Contact from "./pages/Contact";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +46,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/factory/:id" element={<FactoryPage />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/services" element={<Services />} />
             <Route path="/services/:serviceId" element={<ServiceDetail />} />
             <Route path="/pricing" element={<Pricing />} />
@@ -62,6 +66,8 @@ const App = () => (
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/refund" element={<Refund />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/direct-factory" element={<DirectFactory />} />
             <Route path="/factory-search" element={<FactorySearch />} />
             <Route path="/factory-results/:id" element={<FactoryResults />} />
