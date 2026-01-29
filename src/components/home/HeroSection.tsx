@@ -136,8 +136,8 @@ const HeroSection = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in-up" style={{ animationDelay: '400ms' }}>
-          <Button variant="outline" size="xl" className="border-white/30 text-white hover:bg-white/10 bg-transparent">
-            {c.howItWorks}
+          <Button variant="outline" size="xl" className="border-white/30 text-white hover:bg-white/10 bg-transparent" onClick={() => navigate('/direct-factory')}>
+            {language === 'ar' ? 'بحث متقدم بالصورة/الرابط' : language === 'zh' ? '图片/链接高级搜索' : 'Advanced Image/URL Search'}
           </Button>
           <Button variant="hero" size="xl" onClick={() => navigate('/marketplace')}>
             {c.browseFactories}

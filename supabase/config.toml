@@ -2,3 +2,6 @@ project_id = "pinbppuktcqdbplmmusz"
 
 [functions.api]
 verify_jwt = false
+
+[functions.factory-search]
+verify_jwt = false

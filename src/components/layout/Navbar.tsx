@@ -22,6 +22,7 @@ const Navbar = () => {
 
   const navLinks = [
     { href: '/marketplace', label: t('nav.marketplace') },
+    { href: '/direct-factory', label: language === 'ar' ? 'بحث متقدم' : language === 'zh' ? '高级搜索' : 'Advanced Search' },
     { href: '/services', label: t('nav.services') },
     { href: '/pricing', label: t('nav.pricing') },
     { href: '/blog', label: t('nav.blog') },
