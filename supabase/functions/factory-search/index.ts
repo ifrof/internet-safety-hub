@@ -485,6 +485,46 @@ Deno.serve(async (req) => {
     const userId = claimsData.claims.sub;
     console.log(`Factory search requested by user: ${userId}`);
 
+    // Use service role client for rate limit check
+    const supabaseService = getSupabaseClient();
+    
+    // Check rate limit using database function
+    const { data: rateLimitData, error: rateLimitError } = await supabaseService
+      .rpc('check_search_rate_limit', { p_user_id: userId });
+
+    if (rateLimitError) {
+      console.error('Rate limit check error:', rateLimitError);
+      return new Response(
+        JSON.stringify({ error: 'حدث خطأ أثناء التحقق من الحد اليومي' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const rateLimit = rateLimitData?.[0];
+    if (!rateLimit?.allowed) {
+      const resetAt = rateLimit?.reset_at ? new Date(rateLimit.reset_at) : new Date();
+      const retryAfterSeconds = Math.ceil((resetAt.getTime() - Date.now()) / 1000);
+      
+      console.log(`Rate limit exceeded for user ${userId}, retry after ${retryAfterSeconds}s`);
+      return new Response(
+        JSON.stringify({ 
+          error: 'تجاوزت الحد المسموح من عمليات البحث اليومية',
+          retryAfter: retryAfterSeconds,
+          resetAt: resetAt.toISOString()
+        }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'Retry-After': String(retryAfterSeconds)
+          } 
+        }
+      );
+    }
+
+    console.log(`Rate limit check passed, ${rateLimit.remaining} searches remaining`);
+
     // Parse and validate body
     let body: any;
     try {
