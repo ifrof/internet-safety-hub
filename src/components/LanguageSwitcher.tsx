@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useLanguage, Language } from '@/contexts/LanguageContext';
 
-const languages: { code: Language; name: string; nativeName: string; flag: string }[] = [
+const languagesList: { code: Language; name: string; nativeName: string; flag: string }[] = [
   { code: 'ar', name: 'Arabic', nativeName: 'العربية', flag: '🇸🇦' },
   { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸' },
   { code: 'zh', name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
@@ -20,7 +20,15 @@ interface LanguageSwitcherProps {
 const LanguageSwitcher = ({ variant = 'light' }: LanguageSwitcherProps) => {
   const { language, setLanguage } = useLanguage();
   
-  const currentLang = languages.find(l => l.code === language);
+  const currentLang = languagesList.find(l => l.code === language);
+
+  const handleLanguageChange = (langCode: Language) => {
+    // Clear localStorage to ensure clean state
+    localStorage.setItem('ifrof-language', langCode);
+    setLanguage(langCode);
+    // Force page reload to ensure all components update
+    window.location.reload();
+  };
 
   return (
     <DropdownMenu>
@@ -37,10 +45,10 @@ const LanguageSwitcher = ({ variant = 'light' }: LanguageSwitcherProps) => {
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[160px]">
-        {languages.map((lang) => (
+        {languagesList.map((lang) => (
           <DropdownMenuItem
             key={lang.code}
-            onClick={() => setLanguage(lang.code)}
+            onClick={() => handleLanguageChange(lang.code)}
             className={`flex items-center gap-3 cursor-pointer ${
               language === lang.code ? 'bg-primary/10 text-primary' : ''
             }`}
