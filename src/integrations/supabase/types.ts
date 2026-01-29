@@ -20,6 +20,8 @@ export type Database = {
           factory_id: string | null
           id: string
           last_message_at: string | null
+          participant_1_id: string | null
+          participant_2_id: string | null
           type: string
           updated_at: string
           user_id: string | null
@@ -29,6 +31,8 @@ export type Database = {
           factory_id?: string | null
           id?: string
           last_message_at?: string | null
+          participant_1_id?: string | null
+          participant_2_id?: string | null
           type: string
           updated_at?: string
           user_id?: string | null
@@ -38,6 +42,8 @@ export type Database = {
           factory_id?: string | null
           id?: string
           last_message_at?: string | null
+          participant_1_id?: string | null
+          participant_2_id?: string | null
           type?: string
           updated_at?: string
           user_id?: string | null
@@ -75,8 +81,13 @@ export type Database = {
           employees_count: string | null
           established_year: number | null
           export_countries: string[] | null
+          founded_year: number | null
           id: string
+          inspection_status:
+            | Database["public"]["Enums"]["inspection_status"]
+            | null
           is_direct_factory: boolean | null
+          last_activity: string | null
           location: string | null
           logo_url: string | null
           main_products: string[] | null
@@ -84,6 +95,7 @@ export type Database = {
           name: string
           name_en: string | null
           name_zh: string | null
+          owner_user_id: string | null
           production_capacity: string | null
           rating: number | null
           response_rate: number | null
@@ -91,6 +103,7 @@ export type Database = {
           reviews_count: number | null
           subcategory: string | null
           updated_at: string
+          verification_documents: Json | null
           verification_score: number | null
           verification_status: string | null
           website_url: string | null
@@ -110,8 +123,13 @@ export type Database = {
           employees_count?: string | null
           established_year?: number | null
           export_countries?: string[] | null
+          founded_year?: number | null
           id?: string
+          inspection_status?:
+            | Database["public"]["Enums"]["inspection_status"]
+            | null
           is_direct_factory?: boolean | null
+          last_activity?: string | null
           location?: string | null
           logo_url?: string | null
           main_products?: string[] | null
@@ -119,6 +137,7 @@ export type Database = {
           name: string
           name_en?: string | null
           name_zh?: string | null
+          owner_user_id?: string | null
           production_capacity?: string | null
           rating?: number | null
           response_rate?: number | null
@@ -126,6 +145,7 @@ export type Database = {
           reviews_count?: number | null
           subcategory?: string | null
           updated_at?: string
+          verification_documents?: Json | null
           verification_score?: number | null
           verification_status?: string | null
           website_url?: string | null
@@ -145,8 +165,13 @@ export type Database = {
           employees_count?: string | null
           established_year?: number | null
           export_countries?: string[] | null
+          founded_year?: number | null
           id?: string
+          inspection_status?:
+            | Database["public"]["Enums"]["inspection_status"]
+            | null
           is_direct_factory?: boolean | null
+          last_activity?: string | null
           location?: string | null
           logo_url?: string | null
           main_products?: string[] | null
@@ -154,6 +179,7 @@ export type Database = {
           name?: string
           name_en?: string | null
           name_zh?: string | null
+          owner_user_id?: string | null
           production_capacity?: string | null
           rating?: number | null
           response_rate?: number | null
@@ -161,6 +187,7 @@ export type Database = {
           reviews_count?: number | null
           subcategory?: string | null
           updated_at?: string
+          verification_documents?: Json | null
           verification_score?: number | null
           verification_status?: string | null
           website_url?: string | null
@@ -170,10 +197,12 @@ export type Database = {
       factory_results: {
         Row: {
           created_at: string
+          email: string | null
           evidence: Json | null
           exclusion_reason: string | null
           id: string
           is_excluded: boolean | null
+          is_verified_factory: boolean | null
           links: string[] | null
           location: string | null
           name: string
@@ -187,10 +216,12 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          email?: string | null
           evidence?: Json | null
           exclusion_reason?: string | null
           id?: string
           is_excluded?: boolean | null
+          is_verified_factory?: boolean | null
           links?: string[] | null
           location?: string | null
           name: string
@@ -204,10 +235,12 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          email?: string | null
           evidence?: Json | null
           exclusion_reason?: string | null
           id?: string
           is_excluded?: boolean | null
+          is_verified_factory?: boolean | null
           links?: string[] | null
           location?: string | null
           name?: string
@@ -239,6 +272,7 @@ export type Database = {
           input_value: string
           normalized_product: Json | null
           optional_params: Json | null
+          results_count: number | null
           search_type: string
           status: string
           updated_at: string
@@ -253,6 +287,7 @@ export type Database = {
           input_value: string
           normalized_product?: Json | null
           optional_params?: Json | null
+          results_count?: number | null
           search_type: string
           status?: string
           updated_at?: string
@@ -267,6 +302,7 @@ export type Database = {
           input_value?: string
           normalized_product?: Json | null
           optional_params?: Json | null
+          results_count?: number | null
           search_type?: string
           status?: string
           updated_at?: string
@@ -278,6 +314,7 @@ export type Database = {
         Row: {
           created_at: string
           currency: string | null
+          delivery_address: string | null
           estimated_price: number | null
           factory_id: string | null
           final_price: number | null
@@ -290,6 +327,7 @@ export type Database = {
           quantity: number
           shipping_cost: number | null
           shipping_method: string | null
+          special_requirements: string | null
           status: string | null
           updated_at: string
           user_id: string
@@ -297,6 +335,7 @@ export type Database = {
         Insert: {
           created_at?: string
           currency?: string | null
+          delivery_address?: string | null
           estimated_price?: number | null
           factory_id?: string | null
           final_price?: number | null
@@ -309,6 +348,7 @@ export type Database = {
           quantity?: number
           shipping_cost?: number | null
           shipping_method?: string | null
+          special_requirements?: string | null
           status?: string | null
           updated_at?: string
           user_id: string
@@ -316,6 +356,7 @@ export type Database = {
         Update: {
           created_at?: string
           currency?: string | null
+          delivery_address?: string | null
           estimated_price?: number | null
           factory_id?: string | null
           final_price?: number | null
@@ -328,6 +369,7 @@ export type Database = {
           quantity?: number
           shipping_cost?: number | null
           shipping_method?: string | null
+          special_requirements?: string | null
           status?: string | null
           updated_at?: string
           user_id?: string
@@ -363,7 +405,10 @@ export type Database = {
           conversation_id: string
           created_at: string
           id: string
+          is_read: boolean | null
+          order_id: string | null
           read_at: string | null
+          receiver_id: string | null
           sender_id: string
           sender_type: string
         }
@@ -373,7 +418,10 @@ export type Database = {
           conversation_id: string
           created_at?: string
           id?: string
+          is_read?: boolean | null
+          order_id?: string | null
           read_at?: string | null
+          receiver_id?: string | null
           sender_id: string
           sender_type: string
         }
@@ -383,11 +431,22 @@ export type Database = {
           conversation_id?: string
           created_at?: string
           id?: string
+          is_read?: boolean | null
+          order_id?: string | null
           read_at?: string | null
+          receiver_id?: string | null
           sender_id?: string
           sender_type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "messages_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "import_orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       order_documents: {
         Row: {
@@ -467,9 +526,12 @@ export type Database = {
           customizable: boolean | null
           description: string | null
           factory_id: string
+          hs_code: string | null
           id: string
           images: string[] | null
+          is_featured: boolean | null
           lead_time: string | null
+          max_order_quantity: number | null
           max_price: number | null
           min_order_quantity: number | null
           min_price: number | null
@@ -479,10 +541,13 @@ export type Database = {
           price: number | null
           sample_available: boolean | null
           sample_price: number | null
+          shipping_available: boolean | null
           specifications: Json | null
+          stock_quantity: number | null
           subcategory: string | null
           unit: string | null
           updated_at: string
+          views_count: number | null
         }
         Insert: {
           category: string
@@ -491,9 +556,12 @@ export type Database = {
           customizable?: boolean | null
           description?: string | null
           factory_id: string
+          hs_code?: string | null
           id?: string
           images?: string[] | null
+          is_featured?: boolean | null
           lead_time?: string | null
+          max_order_quantity?: number | null
           max_price?: number | null
           min_order_quantity?: number | null
           min_price?: number | null
@@ -503,10 +571,13 @@ export type Database = {
           price?: number | null
           sample_available?: boolean | null
           sample_price?: number | null
+          shipping_available?: boolean | null
           specifications?: Json | null
+          stock_quantity?: number | null
           subcategory?: string | null
           unit?: string | null
           updated_at?: string
+          views_count?: number | null
         }
         Update: {
           category?: string
@@ -515,9 +586,12 @@ export type Database = {
           customizable?: boolean | null
           description?: string | null
           factory_id?: string
+          hs_code?: string | null
           id?: string
           images?: string[] | null
+          is_featured?: boolean | null
           lead_time?: string | null
+          max_order_quantity?: number | null
           max_price?: number | null
           min_order_quantity?: number | null
           min_price?: number | null
@@ -527,10 +601,13 @@ export type Database = {
           price?: number | null
           sample_available?: boolean | null
           sample_price?: number | null
+          shipping_available?: boolean | null
           specifications?: Json | null
+          stock_quantity?: number | null
           subcategory?: string | null
           unit?: string | null
           updated_at?: string
+          views_count?: number | null
         }
         Relationships: [
           {
@@ -551,13 +628,16 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
           avatar_url: string | null
           city: string | null
           company_name: string | null
           country: string | null
           created_at: string
+          email: string | null
           full_name: string | null
           id: string
+          is_verified: boolean | null
           phone: string | null
           preferred_language: string | null
           subscription_end_date: string | null
@@ -565,15 +645,22 @@ export type Database = {
           subscription_status: string | null
           updated_at: string
           user_id: string
+          user_type: Database["public"]["Enums"]["user_type"] | null
+          verification_status:
+            | Database["public"]["Enums"]["verification_status"]
+            | null
         }
         Insert: {
+          address?: string | null
           avatar_url?: string | null
           city?: string | null
           company_name?: string | null
           country?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id?: string
+          is_verified?: boolean | null
           phone?: string | null
           preferred_language?: string | null
           subscription_end_date?: string | null
@@ -581,15 +668,22 @@ export type Database = {
           subscription_status?: string | null
           updated_at?: string
           user_id: string
+          user_type?: Database["public"]["Enums"]["user_type"] | null
+          verification_status?:
+            | Database["public"]["Enums"]["verification_status"]
+            | null
         }
         Update: {
+          address?: string | null
           avatar_url?: string | null
           city?: string | null
           company_name?: string | null
           country?: string | null
           created_at?: string
+          email?: string | null
           full_name?: string | null
           id?: string
+          is_verified?: boolean | null
           phone?: string | null
           preferred_language?: string | null
           subscription_end_date?: string | null
@@ -597,38 +691,59 @@ export type Database = {
           subscription_status?: string | null
           updated_at?: string
           user_id?: string
+          user_type?: Database["public"]["Enums"]["user_type"] | null
+          verification_status?:
+            | Database["public"]["Enums"]["verification_status"]
+            | null
         }
         Relationships: []
       }
       service_requests: {
         Row: {
+          cost: number | null
           created_at: string
+          currency: string | null
           details: Json | null
           id: string
+          order_id: string | null
           status: string | null
           type: string
           updated_at: string
           user_id: string
         }
         Insert: {
+          cost?: number | null
           created_at?: string
+          currency?: string | null
           details?: Json | null
           id?: string
+          order_id?: string | null
           status?: string | null
           type: string
           updated_at?: string
           user_id: string
         }
         Update: {
+          cost?: number | null
           created_at?: string
+          currency?: string | null
           details?: Json | null
           id?: string
+          order_id?: string | null
           status?: string | null
           type?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "service_requests_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "import_orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -767,6 +882,23 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      document_type:
+        | "invoice"
+        | "packing_list"
+        | "certificate"
+        | "inspection"
+        | "other"
+      inspection_status: "none" | "pending" | "completed"
+      order_status:
+        | "draft"
+        | "inquiry"
+        | "confirmed"
+        | "shipped"
+        | "delivered"
+        | "cancelled"
+      service_type: "inspection" | "shipping" | "customs" | "other"
+      user_type: "buyer" | "factory" | "admin"
+      verification_status: "pending" | "verified" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -895,6 +1027,25 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      document_type: [
+        "invoice",
+        "packing_list",
+        "certificate",
+        "inspection",
+        "other",
+      ],
+      inspection_status: ["none", "pending", "completed"],
+      order_status: [
+        "draft",
+        "inquiry",
+        "confirmed",
+        "shipped",
+        "delivered",
+        "cancelled",
+      ],
+      service_type: ["inspection", "shipping", "customs", "other"],
+      user_type: ["buyer", "factory", "admin"],
+      verification_status: ["pending", "verified", "rejected"],
     },
   },
 } as const
