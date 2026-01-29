@@ -8,16 +8,16 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { 
-  Mail, 
-  Phone, 
-  MapPin, 
   Send, 
   Loader2,
   ArrowLeft,
   MessageSquare,
-  Clock,
-  Globe
+  MapPin,
+  Shield,
+  Clock
 } from 'lucide-react';
 
 const contactSchema = z.object({
@@ -29,6 +29,7 @@ const contactSchema = z.object({
 
 const Contact = () => {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -59,42 +60,60 @@ const Contact = () => {
 
     setIsLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    toast({
-      title: 'تم إرسال رسالتك',
-      description: 'سنتواصل معك في أقرب وقت ممكن',
-    });
-    
-    setFormData({ name: '', email: '', subject: '', message: '' });
-    setIsLoading(false);
+    try {
+      // Create a support conversation if user is logged in
+      if (user) {
+        const { error } = await supabase
+          .from('conversations')
+          .insert({
+            user_id: user.id,
+            type: 'support',
+          });
+        
+        if (error) throw error;
+      }
+      
+      toast({
+        title: 'تم إرسال رسالتك',
+        description: 'سنرد عليك عبر المنصة في أقرب وقت ممكن',
+      });
+      
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      toast({
+        title: 'خطأ',
+        description: 'فشل إرسال الرسالة، حاول مرة أخرى',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const contactInfo = [
     {
-      icon: Mail,
-      title: 'البريد الإلكتروني',
-      value: 'support@ifrof.com',
-      link: 'mailto:support@ifrof.com'
-    },
-    {
-      icon: Phone,
-      title: 'الهاتف',
-      value: '+966 55 123 4567',
-      link: 'tel:+966551234567'
+      icon: MessageSquare,
+      title: 'التواصل',
+      value: 'عبر المنصة فقط',
+      description: 'سجل دخول لإرسال رسالة مباشرة'
     },
     {
       icon: MapPin,
-      title: 'العنوان',
-      value: 'الرياض، المملكة العربية السعودية',
-      link: null
+      title: 'الموقع',
+      value: 'الصين',
+      description: 'مقرنا الرئيسي'
     },
     {
       icon: Clock,
       title: 'ساعات العمل',
-      value: 'الأحد - الخميس، 9 ص - 6 م',
-      link: null
+      value: 'الأحد - الخميس',
+      description: '9 ص - 6 م (توقيت الصين)'
+    },
+    {
+      icon: Shield,
+      title: 'الأمان',
+      value: 'تواصل آمن',
+      description: 'جميع المحادثات مشفرة'
     }
   ];
 
@@ -119,7 +138,7 @@ const Contact = () => {
               تواصل <span className="text-primary">معنا</span>
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              نحن هنا لمساعدتك. أرسل لنا رسالة وسنرد عليك في أقرب وقت ممكن
+              نحن هنا لمساعدتك. أرسل لنا رسالة عبر المنصة وسنرد عليك في أقرب وقت ممكن
             </p>
           </div>
         </div>
@@ -137,7 +156,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold">أرسل رسالة</h2>
-                  <p className="text-sm text-muted-foreground">سنرد عليك خلال 24 ساعة</p>
+                  <p className="text-sm text-muted-foreground">سنرد عليك عبر المنصة خلال 24 ساعة</p>
                 </div>
               </div>
 
@@ -213,45 +232,36 @@ const Contact = () => {
             <div className="space-y-6">
               <div className="bg-card rounded-2xl p-6 md:p-8 border border-border">
                 <h2 className="text-xl font-bold mb-6">معلومات التواصل</h2>
-                <div className="space-y-6">
+                <div className="grid sm:grid-cols-2 gap-4">
                   {contactInfo.map((info, index) => (
-                    <div key={index} className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <info.icon className="w-6 h-6 text-primary" />
+                    <div key={index} className="bg-muted/50 rounded-xl p-4">
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+                        <info.icon className="w-5 h-5 text-primary" />
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground mb-1">{info.title}</p>
-                        {info.link ? (
-                          <a href={info.link} className="font-semibold hover:text-primary transition-colors">
-                            {info.value}
-                          </a>
-                        ) : (
-                          <p className="font-semibold">{info.value}</p>
-                        )}
-                      </div>
+                      <p className="text-sm text-muted-foreground mb-1">{info.title}</p>
+                      <p className="font-semibold">{info.value}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{info.description}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Social Links */}
-              <div className="bg-card rounded-2xl p-6 md:p-8 border border-border">
-                <h2 className="text-xl font-bold mb-4">تابعنا</h2>
-                <p className="text-muted-foreground text-sm mb-4">
-                  تابعنا على وسائل التواصل الاجتماعي للحصول على آخر الأخبار والعروض
-                </p>
-                <div className="flex gap-3">
-                  {['Twitter', 'LinkedIn', 'WhatsApp'].map((social) => (
-                    <Button key={social} variant="outline" size="sm">
-                      <Globe className="w-4 h-4 ml-2" />
-                      {social}
-                    </Button>
-                  ))}
+              {/* Important Notice */}
+              <div className="bg-primary/5 rounded-2xl p-6 border border-primary/20">
+                <div className="flex items-start gap-3">
+                  <Shield className="w-6 h-6 text-primary flex-shrink-0 mt-1" />
+                  <div>
+                    <h3 className="font-bold mb-2">سياسة التواصل</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      نحرص على أن يتم كل التواصل عبر المنصة حصرياً لضمان أمان معاملاتك وحماية بياناتك. 
+                      لا نستخدم أي وسائل تواصل خارجية مثل الهاتف أو واتساب أو وسائل التواصل الاجتماعي.
+                    </p>
+                  </div>
                 </div>
               </div>
 
               {/* FAQ Link */}
-              <div className="bg-primary/5 rounded-2xl p-6 border border-primary/20">
+              <div className="bg-card rounded-2xl p-6 border border-border">
                 <h3 className="font-bold mb-2">هل لديك أسئلة شائعة؟</h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   قد تجد إجابة سؤالك في قسم الأسئلة الشائعة

@@ -32,6 +32,7 @@ import FactorySearch from "./pages/FactorySearch";
 import FactoryResults from "./pages/FactoryResults";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import QuotePage from "./pages/QuotePage";
 
 const queryClient = new QueryClient();
 
@@ -71,6 +72,8 @@ const App = () => (
             <Route path="/direct-factory" element={<DirectFactory />} />
             <Route path="/factory-search" element={<FactorySearch />} />
             <Route path="/factory-results/:id" element={<FactoryResults />} />
+            <Route path="/services/quote" element={<QuotePage />} />
+            <Route path="/services/verification" element={<QuotePage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
