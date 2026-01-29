@@ -2,8 +2,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
-import { serviceCategories } from '@/data/mockData';
-import { ArrowLeft, CheckCircle } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Shield } from 'lucide-react';
 
 const servicesDetails = [
   {
@@ -81,6 +80,21 @@ const servicesDetails = [
     startingPrice: 50,
     popular: false,
   },
+  {
+    id: 'verification',
+    name: 'التحقق من المورد',
+    icon: '🛡️',
+    description: 'تحقق من هوية المورد والمالك الفعلي والسجل القانوني قبل التعامل',
+    features: [
+      'التحقق من هوية الشركة',
+      'معرفة المالك الفعلي',
+      'فحص السجل القانوني',
+      'تقييم المخاطر',
+      'تقرير شامل',
+    ],
+    startingPrice: 99,
+    popular: true,
+  },
 ];
 
 const Services = () => {
@@ -97,6 +111,18 @@ const Services = () => {
           <p className="text-white/70 text-lg max-w-2xl mx-auto">
             نقدم لك مجموعة متكاملة من الخدمات لتسهيل عملية الاستيراد من البداية حتى النهاية
           </p>
+        </div>
+      </section>
+
+      {/* Important Notice */}
+      <section className="py-6 bg-primary/10 border-y border-primary/20">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-center gap-3 text-center">
+            <Shield className="w-5 h-5 text-primary flex-shrink-0" />
+            <p className="text-sm">
+              <span className="font-semibold">ملاحظة هامة:</span> جميع التعاملات والتواصل تتم عبر المنصة حصرياً لضمان أمان معاملاتك
+            </p>
+          </div>
         </div>
       </section>
 
@@ -152,18 +178,18 @@ const Services = () => {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-12 md:py-16 bg-muted/50">
+      {/* Quote Request CTA */}
+      <section className="py-12 md:py-16 bg-gradient-to-br from-primary/10 to-secondary/10">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4">
-            تحتاج خدمة مخصصة؟
+            تحتاج عرض سعر مخصص؟
           </h2>
           <p className="text-muted-foreground mb-6 md:mb-8 max-w-xl mx-auto text-sm md:text-base">
-            تواصل معنا لنفهم احتياجاتك ونقدم لك الحل المناسب
+            أرسل لنا تفاصيل طلبك واحصل على عرض سعر مخصص خلال 24 ساعة
           </p>
-          <Link to="/contact">
+          <Link to="/services/quote">
             <Button variant="hero" size="lg" className="md:size-xl">
-              تواصل مع فريق الدعم
+              طلب عرض سعر
               <ArrowLeft className="w-5 h-5 mr-2" />
             </Button>
           </Link>
