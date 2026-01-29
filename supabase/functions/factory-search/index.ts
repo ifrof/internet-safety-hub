@@ -6,7 +6,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
-const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 const FIRECRAWL_API_KEY = Deno.env.get('FIRECRAWL_API_KEY');
 const PERPLEXITY_API_KEY = Deno.env.get('PERPLEXITY_API_KEY');
 
@@ -164,7 +163,7 @@ const getSupabaseClient = (authHeader?: string) => {
   );
 };
 
-// Lovable AI helper for product understanding
+// Perplexity AI helper for product understanding (replaces Lovable AI)
 async function analyzeProductWithAI(input: {
   imageBase64?: string;
   productUrl?: string;
@@ -172,9 +171,30 @@ async function analyzeProductWithAI(input: {
   hsCode?: string;
   scrapedContent?: string;
 }): Promise<any> {
-  const messages = [];
+  if (!PERPLEXITY_API_KEY) {
+    console.error('PERPLEXITY_API_KEY not configured');
+    // Return fallback response
+    return {
+      productTitle_ar: input.productName || 'منتج غير محدد',
+      productTitle_en: input.productName || 'Unknown product',
+      keywords_en: [input.productName || 'product'],
+      keywords_zh: ['产品']
+    };
+  }
+
+  let userPrompt = '';
   
-  let systemPrompt = `You are a product analysis expert. Analyze the given product information and extract structured data.
+  if (input.scrapedContent) {
+    userPrompt = `Analyze this product page content and extract product information for finding Chinese manufacturers:\n\n${input.scrapedContent.slice(0, 3000)}`;
+  } else if (input.productName) {
+    userPrompt = `Analyze this product name and extract search keywords for finding Chinese manufacturers: "${input.productName}"`;
+  } else if (input.hsCode) {
+    userPrompt = `Based on HS Code "${input.hsCode}", identify the product category and generate search keywords for finding Chinese manufacturers.`;
+  } else {
+    userPrompt = 'Analyze the product and extract manufacturing keywords.';
+  }
+
+  const systemPrompt = `You are a product analysis expert. Analyze the given product information and extract structured data.
 Return a JSON object with these fields:
 - productTitle_ar: Arabic product title
 - productTitle_en: English product title  
@@ -186,65 +206,52 @@ Return a JSON object with these fields:
 - category: Product category
 - must_have_specs: Key specifications a manufacturer must have
 
-Be specific and include industry-specific terms. Focus on manufacturing keywords.`;
+Be specific and include industry-specific terms. Focus on manufacturing keywords.
+Return ONLY valid JSON, no markdown.`;
 
-  let userContent: any[] = [];
-
-  if (input.imageBase64) {
-    userContent.push({
-      type: "image_url",
-      image_url: { url: `data:image/jpeg;base64,${input.imageBase64}` }
-    });
-    userContent.push({
-      type: "text",
-      text: "Analyze this product image and extract product information for finding Chinese manufacturers."
-    });
-  } else if (input.scrapedContent) {
-    userContent.push({
-      type: "text",
-      text: `Analyze this product page content and extract product information:\n\n${input.scrapedContent}`
-    });
-  } else if (input.productName) {
-    userContent.push({
-      type: "text",
-      text: `Analyze this product name and extract search keywords for finding Chinese manufacturers: "${input.productName}"`
-    });
-  } else if (input.hsCode) {
-    userContent.push({
-      type: "text",
-      text: `Based on HS Code "${input.hsCode}", identify the product category and generate search keywords for finding Chinese manufacturers.`
-    });
-  }
-
-  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'google/gemini-2.5-flash',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userContent }
-      ],
-      response_format: { type: 'json_object' }
-    }),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    console.error('Lovable AI error:', errorText);
-    throw new Error(`AI analysis failed: ${response.status}`);
-  }
-
-  const data = await response.json();
-  const content = data.choices?.[0]?.message?.content;
-  
   try {
-    return JSON.parse(content);
-  } catch {
-    console.error('Failed to parse AI response:', content);
+    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'sonar',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Perplexity AI error:', errorText);
+      throw new Error(`AI analysis failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+    
+    try {
+      // Try to extract JSON from the response
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      }
+      return JSON.parse(content);
+    } catch {
+      console.error('Failed to parse AI response:', content);
+      return {
+        productTitle_ar: input.productName || 'منتج غير محدد',
+        productTitle_en: input.productName || 'Unknown product',
+        keywords_en: [input.productName || 'product'],
+        keywords_zh: ['产品']
+      };
+    }
+  } catch (error) {
+    console.error('AI analysis error:', error);
     return {
       productTitle_ar: input.productName || 'منتج غير محدد',
       productTitle_en: input.productName || 'Unknown product',
@@ -256,6 +263,11 @@ Be specific and include industry-specific terms. Focus on manufacturing keywords
 
 // Firecrawl helper for URL scraping
 async function scrapeUrl(url: string): Promise<string> {
+  if (!FIRECRAWL_API_KEY) {
+    console.error('FIRECRAWL_API_KEY not configured');
+    return '';
+  }
+
   try {
     const response = await fetch('https://api.firecrawl.dev/v1/scrape', {
       method: 'POST',
@@ -285,6 +297,11 @@ async function scrapeUrl(url: string): Promise<string> {
 
 // Perplexity search helper
 async function searchWithPerplexity(queries: string[]): Promise<any[]> {
+  if (!PERPLEXITY_API_KEY) {
+    console.error('PERPLEXITY_API_KEY not configured');
+    return [];
+  }
+
   const results: any[] = [];
   
   for (const query of queries.slice(0, 4)) { // Limit to 4 queries
@@ -338,8 +355,12 @@ Return results as JSON array with fields: name, name_zh, location, website, link
   return results;
 }
 
-// Parse factory candidates from Perplexity results
+// Parse factory candidates from Perplexity results using Perplexity AI
 async function parseFactoryCandidates(searchResults: any[], normalizedProduct: any): Promise<any[]> {
+  if (!PERPLEXITY_API_KEY) {
+    return [];
+  }
+
   const candidatesPrompt = `Based on these search results, extract a list of potential factory candidates.
 
 Search Results:
@@ -357,55 +378,52 @@ For each candidate, extract:
 - manufacturing_signals: Evidence this is a real factory
 - trading_signals: Evidence this might be a trading company
 
-Return as JSON array. Only include companies that appear to be manufacturers, not obviously trading companies.`;
+Return as JSON array. Only include companies that appear to be manufacturers, not obviously trading companies.
+Return ONLY valid JSON, no markdown.`;
 
-  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'google/gemini-2.5-flash',
-      messages: [
-        { role: 'user', content: candidatesPrompt }
-      ],
-      response_format: { type: 'json_object' }
-    }),
-  });
-
-  if (!response.ok) {
-    console.error('Candidate parsing error:', await response.text());
-    return [];
-  }
-
-  const data = await response.json();
-  const content = data.choices?.[0]?.message?.content;
-  
   try {
-    const parsed = JSON.parse(content);
-    return parsed.candidates || parsed.factories || parsed || [];
-  } catch {
-    console.error('Failed to parse candidates:', content);
+    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${PERPLEXITY_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'sonar',
+        messages: [
+          { role: 'user', content: candidatesPrompt }
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Candidate parsing error:', await response.text());
+      return [];
+    }
+
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+    
+    try {
+      // Try to extract JSON from the response
+      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        return JSON.parse(jsonMatch[0]);
+      }
+      const parsed = JSON.parse(content);
+      return parsed.candidates || parsed.factories || parsed || [];
+    } catch {
+      console.error('Failed to parse candidates:', content);
+      return [];
+    }
+  } catch (error) {
+    console.error('Parse candidates error:', error);
     return [];
   }
 }
 
 // Verify factory and calculate score
 async function verifyFactory(candidate: any): Promise<any> {
-  // Manufacturing signals (positive)
-  const manufacturingSignals = [
-    'factory', 'manufacturer', 'production line', 'workshop', 'equipment',
-    'R&D', 'OEM', 'ODM', 'ISO', 'QC', 'quality control', 'capacity',
-    '工厂', '车间', '生产线', '设备', '研发', '产能', '质量', 'OEM', 'ODM'
-  ];
-
-  // Trading signals (negative)
-  const tradingSignals = [
-    'trading', 'import', 'export', 'sourcing', 'agent', 'general merchandise',
-    '贸易', '进出口', '代理', '商贸'
-  ];
-
   let score = 50; // Base score
   const evidence: any[] = [];
   const redFlags: string[] = [];
