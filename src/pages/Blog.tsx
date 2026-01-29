@@ -2,10 +2,24 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Badge } from '@/components/ui/badge';
-import { mockBlogPosts } from '@/data/mockData';
-import { Clock, User, ArrowLeft } from 'lucide-react';
+import { getAllBlogPosts } from '@/data/blogContent';
+import { Clock, User, ArrowLeft, ArrowRight } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Blog = () => {
+  const { language, t, dir } = useLanguage();
+  const blogPosts = getAllBlogPosts(language);
+  
+  const ArrowIcon = dir === 'rtl' ? ArrowLeft : ArrowRight;
+  
+  const getReadTimeLabel = () => {
+    switch (language) {
+      case 'en': return 'min read';
+      case 'zh': return '分钟阅读';
+      default: return 'دقائق';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -14,10 +28,10 @@ const Blog = () => {
       <section className="bg-secondary pt-24 pb-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-            المدونة التعليمية
+            {t('blog.title')}
           </h1>
           <p className="text-white/70 text-lg max-w-2xl mx-auto">
-            تعلم كل ما تحتاجه عن الاستيراد من الصين والتعامل مع المصانع
+            {t('blog.subtitle')}
           </p>
         </div>
       </section>
@@ -26,7 +40,7 @@ const Blog = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {mockBlogPosts.map((post) => (
+            {blogPosts.map((post) => (
               <Link
                 key={post.id}
                 to={`/blog/${post.slug}`}
@@ -58,7 +72,7 @@ const Blog = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <Clock className="w-4 h-4" />
-                      <span>{post.readTime} دقائق</span>
+                      <span>{post.readTime} {getReadTimeLabel()}</span>
                     </div>
                   </div>
 
@@ -70,7 +84,7 @@ const Blog = () => {
                         </Badge>
                       ))}
                     </div>
-                    <ArrowLeft className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                    <ArrowIcon className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                   </div>
                 </div>
               </Link>
