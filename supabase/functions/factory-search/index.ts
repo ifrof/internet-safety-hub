@@ -10,8 +10,120 @@ const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
 const FIRECRAWL_API_KEY = Deno.env.get('FIRECRAWL_API_KEY');
 const PERPLEXITY_API_KEY = Deno.env.get('PERPLEXITY_API_KEY');
 
-// Initialize Supabase client
-const getSupabaseClient = () => {
+// Input validation constants
+const MAX_PRODUCT_NAME_LENGTH = 200;
+const MAX_URL_LENGTH = 500;
+const MAX_HS_CODE_LENGTH = 15;
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
+const ALLOWED_URL_PROTOCOLS = ['http:', 'https:'];
+
+// URL validation helper
+function isValidUrl(urlString: string): boolean {
+  try {
+    const url = new URL(urlString);
+    return ALLOWED_URL_PROTOCOLS.includes(url.protocol);
+  } catch {
+    return false;
+  }
+}
+
+// HS Code validation (6-10 digits, sometimes with dots)
+function isValidHsCode(code: string): boolean {
+  const hsCodeRegex = /^[0-9]{4,10}(\.[0-9]{2})?$/;
+  return hsCodeRegex.test(code.replace(/\s/g, ''));
+}
+
+// Sanitize text input - remove potentially dangerous characters
+function sanitizeText(input: string): string {
+  if (!input || typeof input !== 'string') return '';
+  // Remove control characters and trim
+  return input
+    .replace(/[\x00-\x1F\x7F]/g, '')
+    .replace(/[<>]/g, '')
+    .trim()
+    .slice(0, MAX_PRODUCT_NAME_LENGTH);
+}
+
+// Validate and sanitize all inputs
+function validateInputs(body: any): { valid: boolean; error?: string; sanitized?: any } {
+  const { imageBase64, productUrl, productName, hsCode, optional } = body;
+
+  // Check at least one input is provided
+  if (!imageBase64 && !productUrl && !productName && !hsCode) {
+    return { valid: false, error: 'يجب إدخال صورة أو رابط أو اسم المنتج أو HS CODE' };
+  }
+
+  const sanitized: any = { optional: optional || {} };
+
+  // Validate productName
+  if (productName) {
+    if (typeof productName !== 'string') {
+      return { valid: false, error: 'اسم المنتج يجب أن يكون نصًا' };
+    }
+    if (productName.length > MAX_PRODUCT_NAME_LENGTH) {
+      return { valid: false, error: `اسم المنتج يجب ألا يتجاوز ${MAX_PRODUCT_NAME_LENGTH} حرف` };
+    }
+    sanitized.productName = sanitizeText(productName);
+  }
+
+  // Validate productUrl
+  if (productUrl) {
+    if (typeof productUrl !== 'string') {
+      return { valid: false, error: 'رابط المنتج يجب أن يكون نصًا' };
+    }
+    if (productUrl.length > MAX_URL_LENGTH) {
+      return { valid: false, error: `رابط المنتج يجب ألا يتجاوز ${MAX_URL_LENGTH} حرف` };
+    }
+    if (!isValidUrl(productUrl)) {
+      return { valid: false, error: 'رابط المنتج غير صحيح' };
+    }
+    sanitized.productUrl = productUrl.trim();
+  }
+
+  // Validate hsCode
+  if (hsCode) {
+    if (typeof hsCode !== 'string') {
+      return { valid: false, error: 'رمز HS يجب أن يكون نصًا' };
+    }
+    if (hsCode.length > MAX_HS_CODE_LENGTH) {
+      return { valid: false, error: `رمز HS يجب ألا يتجاوز ${MAX_HS_CODE_LENGTH} حرف` };
+    }
+    if (!isValidHsCode(hsCode)) {
+      return { valid: false, error: 'رمز HS غير صحيح (يجب أن يكون 4-10 أرقام)' };
+    }
+    sanitized.hsCode = hsCode.trim();
+  }
+
+  // Validate imageBase64
+  if (imageBase64) {
+    if (typeof imageBase64 !== 'string') {
+      return { valid: false, error: 'بيانات الصورة غير صحيحة' };
+    }
+    // Estimate size: base64 is ~4/3 the size of binary
+    const estimatedBytes = (imageBase64.length * 3) / 4;
+    if (estimatedBytes > MAX_IMAGE_SIZE_BYTES) {
+      return { valid: false, error: 'حجم الصورة يجب ألا يتجاوز 5 ميجابايت' };
+    }
+    // Basic validation that it looks like base64
+    if (!/^[A-Za-z0-9+/=]+$/.test(imageBase64.replace(/\s/g, ''))) {
+      return { valid: false, error: 'بيانات الصورة غير صالحة' };
+    }
+    sanitized.imageBase64 = imageBase64;
+  }
+
+  return { valid: true, sanitized };
+}
+
+// Initialize Supabase client with auth header for user context
+const getSupabaseClient = (authHeader?: string) => {
+  if (authHeader) {
+    return createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+  }
+  // Service role client for database operations
   return createClient(
     Deno.env.get('SUPABASE_URL')!,
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -348,17 +460,54 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const body = await req.json();
-    const { imageBase64, productUrl, productName, hsCode, optional } = body;
-
-    // Validate input - at least one required
-    if (!imageBase64 && !productUrl && !productName && !hsCode) {
+    // Authentication check
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
       return new Response(
-        JSON.stringify({ error: 'يجب إدخال صورة أو رابط أو اسم المنتج أو HS CODE' }),
+        JSON.stringify({ error: 'يجب تسجيل الدخول لاستخدام البحث' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Verify the user's token
+    const authClient = getSupabaseClient(authHeader);
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await authClient.auth.getClaims(token);
+
+    if (claimsError || !claimsData?.claims) {
+      console.error('Auth error:', claimsError);
+      return new Response(
+        JSON.stringify({ error: 'جلسة غير صالحة، يرجى تسجيل الدخول مرة أخرى' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const userId = claimsData.claims.sub;
+    console.log(`Factory search requested by user: ${userId}`);
+
+    // Parse and validate body
+    let body: any;
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: 'طلب غير صالح' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    // Validate and sanitize inputs
+    const validation = validateInputs(body);
+    if (!validation.valid) {
+      return new Response(
+        JSON.stringify({ error: validation.error }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { imageBase64, productUrl, productName, hsCode, optional } = validation.sanitized;
+
+    // Use service role client for database operations
     const supabase = getSupabaseClient();
 
     // Determine search type
@@ -376,21 +525,25 @@ Deno.serve(async (req) => {
       inputValue = hsCode;
     }
 
-    // Create search record
+    // Create search record with user_id
     const { data: searchRecord, error: insertError } = await supabase
       .from('factory_searches')
       .insert({
         search_type: searchType,
         input_value: inputValue,
         optional_params: optional || {},
-        status: 'processing'
+        status: 'processing',
+        user_id: userId
       })
       .select()
       .single();
 
     if (insertError) {
       console.error('Insert error:', insertError);
-      throw new Error('فشل في إنشاء سجل البحث');
+      return new Response(
+        JSON.stringify({ error: 'فشل في بدء البحث' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const searchId = searchRecord.id;
@@ -489,7 +642,7 @@ Deno.serve(async (req) => {
     } catch (pipelineError: any) {
       console.error('Pipeline error:', pipelineError);
       
-      // Update search status to failed
+      // Update search status to failed - store detailed error in DB but return generic message
       await supabase
         .from('factory_searches')
         .update({ 
@@ -498,13 +651,19 @@ Deno.serve(async (req) => {
         })
         .eq('id', searchId);
 
-      throw pipelineError;
+      // Return generic error message to client
+      return new Response(
+        JSON.stringify({ error: 'فشل في إكمال البحث، يرجى المحاولة مرة أخرى', searchId }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
   } catch (error: any) {
+    // Log detailed error server-side only
     console.error('Factory search error:', error);
+    // Return generic error message to client
     return new Response(
-      JSON.stringify({ error: error.message || 'حدث خطأ غير متوقع' }),
+      JSON.stringify({ error: 'حدث خطأ، يرجى المحاولة لاحقًا' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
