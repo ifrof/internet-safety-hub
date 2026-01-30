@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useFactory } from '@/hooks/useFactories';
+import { mockProducts } from '@/data/mockData';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   Star, CheckCircle, MapPin, Calendar, Users, Factory, 
@@ -18,7 +19,7 @@ const FactoryPage = () => {
   const navigate = useNavigate();
   const { language } = useLanguage();
   const { data: factory, isLoading, error } = useFactory(id || '');
-  const factoryProducts = [].filter(p => p.factoryId === id);
+  const factoryProducts = mockProducts.filter(p => p.factoryId === id);
 
   const content = {
     ar: {

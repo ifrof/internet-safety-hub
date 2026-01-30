@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { mockFactories } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, CheckCircle, MapPin, ArrowLeft, Factory, Calendar, Users, Package } from 'lucide-react';
@@ -74,7 +75,7 @@ const FeaturedFactories = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[].map((factory, index) => {
+          {mockFactories.map((factory, index) => {
             const yearsInBusiness = currentYear - factory.establishedYear;
             
             return (

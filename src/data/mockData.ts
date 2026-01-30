@@ -1,6 +1,6 @@
 import { Factory, Product, BlogPost, SubscriptionPlan } from '@/types';
 
-export const []: Factory[] = [
+export const mockFactories: Factory[] = [
   {
     id: '1',
     name: 'مصنع قوانغتشو للإلكترونيات',
@@ -119,7 +119,7 @@ export const []: Factory[] = [
   },
 ];
 
-export const []: Product[] = [
+export const mockProducts: Product[] = [
   {
     id: '1',
     factoryId: '1',

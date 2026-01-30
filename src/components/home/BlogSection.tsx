@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { mockBlogPosts } from '@/data/mockData';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Clock, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
